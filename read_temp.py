@@ -44,16 +44,19 @@ def read_temp(temp_sens):
     steinhart  = (1.0 / steinhart) - 273.15
     return steinhart
 
-print("I'm alive!\n")
-utime.sleep_ms(2000)
+def tempLoop():    
+    print("I'm alive!\n")
+    utime.sleep_ms(2000)
 
-temp_sens = init_temp_sensor()
+    temp_sens = init_temp_sensor()
 
-sample_last_ms = 0
-SAMPLE_INTERVAL = 1000
+    sample_last_ms = 0
+    SAMPLE_INTERVAL = 1000
 
-while (True):
-    if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
-        temp = read_temp(temp_sens)
-        print('Thermistor temperature: ' + str(temp))
-        sample_last_ms = utime.ticks_ms()
+    while (True):
+        if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
+            temp = read_temp(temp_sens)
+            sample_last_ms = utime.ticks_ms()
+
+
+    
