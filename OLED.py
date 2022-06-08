@@ -4,19 +4,28 @@ from machine import I2C, Pin
 
 i2c = I2C(scl=Pin(22), sda=Pin(23), freq=10000)
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
-oled.fill(0)
-oled.text("Temperature:", 0, 8)
-oled.show()
 
 class Screen:
     def __init__(self, oled):
         self.oled = oled
         self.oled.fill(0)
-        self.oled.text("System Overview", 0, 8)
+        self.oled.text("Hello Peps!", 0, 8)
         self.oled.show()
+        self.lines = ["System Overview", "", "", ""]
     
-    def printTemp(self, temp):
-        self.oled.text("Temperature : "+str(temp)+"°C", 0, 16)
+    def setTemp(self, temp):
+        self.lines[1] = "Temperature:" + str(temp)
+    
+    #Last time fed
+    def setFeed(self, feed):
+        self.lines[2] = "Last Feed:" + str(feed)
+
+    def printTemp(self):
+        self.oled.fill(0)
+        self.oled.text(self.lines[0], 0, 8)
+        self.oled.text(self.lines[1], 0, 16)
+        self.oled.text(self.lines[2], 0, 24)
         self.oled.show()
+            
 
 oledScreen = Screen(oled)

@@ -17,17 +17,17 @@ ADC_MAX = 1023
 ADC_Vmax = 3.15
 
 class TempSensor:
-    def __init__(self, pinNoTemp = 32):
-        adc = ADC(Pin(pinNoTemp))
-        adc.atten(ADC.ATTN_11DB)
-        adc.width(ADC.WIDTH_10BIT)
-        return adc
+    def __init__(self, pinNoTemp = 32)-> None:
+        self.adc = ADC(Pin(pinNoTemp))
+        self.adc.atten(ADC.ATTN_11DB)
+        self.adc.width(ADC.WIDTH_10BIT)
+        
 
-    def read_temp(temp_sens):
+    def read_temp(self):
         raw_read = []
         # Collect NUM_SAMPLES
         for i in range(1, NUM_SAMPLES+1):
-            raw_read.append(temp_sens.read())
+            raw_read.append(self.adc.read())
 
         # Average of the NUM_SAMPLES and look it up in the table
         raw_average = sum(raw_read)/NUM_SAMPLES
@@ -43,21 +43,7 @@ class TempSensor:
         steinhart  = log(resistance / NOM_RES) / THERM_B_COEFF
         steinhart += 1.0 / (TEMP_NOM + 273.15)
         steinhart  = (1.0 / steinhart) - 273.15
+        print('Temperature: {}°C'.format(steinhart))
         return steinhart
-
-    def tempLoop():    
-        print("I'm alive!\n")
-        utime.sleep_ms(2000)
-
-        temp_sens = init_temp_sensor()
-
-        sample_last_ms = 0
-        SAMPLE_INTERVAL = 1000
-
-        while (True):
-            if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
-                temp = read_temp(temp_sens)
-                sample_last_ms = utime.ticks_ms()
-
 
 tempsens = TempSensor()
