@@ -4,10 +4,10 @@
 # v output system temp
 # e array of tracking errors
 class PIDControl:
-    def __init__(self, rtemp, vtemp):
-        self.r = rtemp
-        self.v = vtemp
-        self.e = [rtemp-vtemp] 
+    def __init__(self,newTemp):
+        self.v=newTemp
+        self.r = 18
+        self.e = [self.r-self.v]
 
     def setProportional(self, value):
         self.P = value
@@ -29,5 +29,3 @@ class PIDControl:
         return u
     
     
-    
-            

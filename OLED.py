@@ -20,7 +20,7 @@ class Screen:
     def setFeed(self, feed):
         self.lines[2] = "Last Feed:" + str(feed)
 
-    def printTemp(self):
+    def printOverview(self):
         self.oled.fill(0)
         self.oled.text(self.lines[0], 0, 8)
         self.oled.text(self.lines[1], 0, 16)

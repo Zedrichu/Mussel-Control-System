@@ -40,7 +40,7 @@ class TempSensor:
         print('Thermistor resistance: {} ohms'.format(resistance))
 
         # Convert to temperature
-        steinhart  = log(resistance / NOM_RES) / THERM_B_COEFF
+        steinhart  = -log(resistance / NOM_RES) / THERM_B_COEFF
         steinhart += 1.0 / (TEMP_NOM + 273.15)
         steinhart  = (1.0 / steinhart) - 273.15
         print('Temperature: {}°C'.format(steinhart))

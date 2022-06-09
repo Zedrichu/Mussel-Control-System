@@ -22,13 +22,14 @@ class PumpControl:
             utime.sleep_us(50)
             self.stepOn()
             utime.sleep_us(50)
+    
+    #Step depending on sleep
+    def stepSleep(self,sleep):
+        self.stepOn()
+        utime.sleep_us(sleep)
+        self.stepOn()
+        utime.sleep_us(sleep)
 
-
-
-# Direction in pin 27, step in pin 12
-pumpLeft = PumpControl(27,12)
 # Direction in pin 15, step in pin 33
 pumpRight = PumpControl(15,33)
-
-#pumpLeft.cycle(300)
 #pumpRight.cycle(100)
