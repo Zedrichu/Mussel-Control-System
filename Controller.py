@@ -1,5 +1,5 @@
 # Import the 2 defined pumps
-from Pumping import pumpLeft, pumpRight
+from Pumping import pumpRight
 # Import the defined cooler block
 from Cooling import cooler
 # Import the reading of temp
@@ -8,46 +8,58 @@ from TempSensor import tempsens
 from OLED import oledScreen
 # Import the PID controller
 from PID import PID, PIDControl
+# Import PWM
+from PWMPump import pumpLeft
 # Import time
 import time
 
 
 #PID controller section
-PID = PIDControl()
-# Set the PID controller parameters
-PID.setProportional(0.5)
-PID.setIntegral(0)
-PID.setDerivative(0)
+PID = PIDControl(tempsens.read_temp())
+#Set the PID controller parameters
+PID.setProportional(1)
+PID.setIntegral(1)
+PID.setDerivative(1)
 
-#Open file for logging
+#Logging section
 logFile = open("Data.txt", "w")
-#Write header to file
-logFile.write("Time,Temp, Actuator Value\n")
+logFile.write("Time,Temp\n")
 logFile.close()
 
-def actuator(actuatorValue):
-    if actuatorValue == 0:
-        cooler.peltLowPower()
-        cooler.fanOff()
-        pumpLeft.cycle(1600*5,1000)
-    elif actuatorValue>15:
-        cooler.peltHighPower()
-        cooler.fanOn()
-        pumpLeft.cycle(1600*5,50)
+cooler.peltHighPower()
+cooler.fanOn()
 
 
+
+# Main loop
 while(True):
     newTemp = tempsens.read_temp()
+    #Write the new temperature to the log file
+    logFile = open("Data.txt", "a")
+    logFile.write(str(time.time()) + "," + str(newTemp) + "\n")
+    logFile.close()
+    #Update the oled screen
     oledScreen.setTemp(newTemp)
     oledScreen.printOverview()
-    actuatorValue = PID.update(newTemp)
-    actuator(actuatorValue)
-    #Write data to file
-    logFile = open("Data.txt", "a")
-    logFile.write(str(time.ticks_ms()) + "," + str(newTemp) + "," + str(actuatorValue) "\n")
-    logFile.close()
-    time.sleep(10)
 
+    #PID controller
+    actuatorValue = -PID.update(newTemp)
+    print("Actuator:" + str(actuatorValue))
+    pumpLeft.speed(actuatorValue)
+    
+    5500-0
+    1-0
+
+    0-lowp - -1
+    1000-highp - 0
+    5500-highp - 1
+
+    time.sleep(10)
+    
+    
+
+    
+    
 
 
     

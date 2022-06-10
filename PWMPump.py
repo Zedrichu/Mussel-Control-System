@@ -12,7 +12,7 @@ class PumpPWM:
 
     def speed(self,actuator):
         #Formula of actuator to speed #TODO
-        self.pwm.freq(actuator*1500)
+        self.pwm.freq(actua)
     
 
 
