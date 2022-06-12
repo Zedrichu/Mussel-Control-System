@@ -10,9 +10,8 @@ class PumpPWM:
     def switch(self):
         self.dir.value( 1-self.dir.value() )
 
-    def speed(self,actuator):
-        #Formula of actuator to speed #TODO
-        self.pwm.freq(actua)
+    def speed(self,speed):
+        self.pwm.freq(speed)
     
 
 
