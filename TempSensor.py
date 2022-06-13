@@ -45,5 +45,3 @@ class TempSensor:
         steinhart  = (1.0 / steinhart) - 273.15
         print('Temperature: {}°C'.format(steinhart))
         return steinhart
-
-tempsens = TempSensor()

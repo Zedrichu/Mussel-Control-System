@@ -25,9 +25,10 @@ class TaskScheduler:
         self.currentIndex = 0
         self.clockTime = 0
     
+    
 class Task:
     def __init__(self, name, freq, func):
-        self.name = name
+        self.name = name 
         self.freq = freq
         self.func = func
 

@@ -16,4 +16,4 @@ class PumpPWM:
 
 
 # Direction in pin 27, step in pin 12
-pumpLeft = PumpPWM(27,12)
+pumpCooling = PumpPWM(27,12)

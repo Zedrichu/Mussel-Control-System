@@ -1,13 +1,10 @@
 import ssd1306
 from machine import I2C, Pin
 
-
-i2c = I2C(scl=Pin(22), sda=Pin(23), freq=10000)
-oled = ssd1306.SSD1306_I2C(128, 64, i2c)
-
 class Screen:
-    def __init__(self, oled):
-        self.oled = oled
+    def __init__(self)
+        i2c = I2C(scl=Pin(22), sda=Pin(23), freq=10000)
+        self.oled = ssd1306.SSD1306_I2C(128, 64, i2c)
         self.oled.fill(0)
         self.oled.text("Hello Peps!", 0, 8)
         self.oled.show()
@@ -28,4 +25,4 @@ class Screen:
         self.oled.show()
             
 
-oledScreen = Screen(oled)
+oledScreen = Screen()
