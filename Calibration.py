@@ -1,40 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from LightSensor import LightSensor
 import math
 
-lsens = LightSensor()
-REF_INTENS = lsens.readIntensity()
+calib = open('calibration.txt', 'r')
+data = calib.readlines()
+REF_INTENS = int(data[1])
+REF_CELLS = np.array([0, 5000, 50000, 500000, 1000000])#TODO ask Eugenia
+RAW_ODs = []
 
+for line in data[3:]:
+    RAW_ODs.append(float(line.split(',')[1]))
+RAW_ODs = np.array(RAW_ODs)
 
-def computeODs():
-    ods = []
-    for i in range(5):
-        ods.append(lsens.readIntensity()/REF_INTE1NS)
-        time.sleep(0.01)
+A, B = np.polyfit(RAW_ODs,REF_CELLS,1)
+print("Slope value:{} Intercept value:{}".format(A, B))
+func = A*RAW_ODs + B
 
-#TODO
-def calibrate():        
-        RefCells = np.array([----TODO----])
-        RawODS = []
-        
-        led = Pin(21, Pin.OUT)
-        led.value(1)
-
-
-        for i in range(5):
-            RawODS.append(lsens.readIntensity())
-
-        RawODS = np.array(RawODS)
-
-        A, B = np.polyfit(RawODS,RefODS,1)
-        print(A,B)
-
-        func = A*RawODS + B
-
-        plt.plot(RawODS,func,color="green")
-        plt.plot(RawODS,RefODS,color="red")
-        plt.show()
-        return A, B
-
-#calibrate()
+plt.plot(RAW_ODs,func,color="green")
+plt.plot(RAW_ODs,REF_CELLS,color="red")
+plt.savefig('CalibOD.png')

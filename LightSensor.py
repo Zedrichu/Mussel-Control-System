@@ -20,7 +20,6 @@ class LightSensor:
         self.adc = ADC(Pin(34))
         self.adc.atten(ADC.ATTN_11DB)
         self.adc.width(ADC.WIDTH_12BIT)
-
         # Pin component for LED associated in in-line measurement block
         self.led = Pin(21, Pin.OUT)
         self.led.value(1)
@@ -37,14 +36,24 @@ class LightSensor:
         self.led.value(0)
         return sum(intensi)/3
     
-    def computeOD(refInten):
-        # Read triplicates of light intensity
-        for i in range(3):
-            reads += self.readIntensity()
-            time.sleep(0.1)
-        # Average the read intensities
-        rawInten = reads / 3
+    def computeOD(refInten, rawInten):
         # Apply formula for optical density
         rawOD = (-math.log10(rawInten / refInten))
         return rawOD
+    
+    def computeConcentration(rawOD, slope, intercept):
+        return slope*rawOd + intercept
 
+    def logCalibration(noSamples):
+        # Open file on board for logging calibration data
+        file = open('calibration.txt', 'w')
+        # Log the reference intensity on clear water sample
+        REF_INTENS = self.readIntensity()
+        file.write("Reference Intensity:\n"+str(REF_INTENS)+"\n")
+        # Log the raw intensities & optical density on each of the algae samples 
+        file.write("Intensities & Optical Densities of Samples:\n")
+        for i in range(noSamples):
+            rawI = self.readIntensity()
+            rawOD = self.computeOD(REF_INTENS, rawI)
+            file.write("{},{}\n".format(rawI, rawOD))
+        file.close()
