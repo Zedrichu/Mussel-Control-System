@@ -35,15 +35,6 @@ class Task:
         self.func()
         print(self.name + "executed!")
         
-def add23():
-    print("2+3")
-
-def add50():
-    print("5+0")
-
-def start():
-    print("Start!")
-
 t1 = Task("t1", 2, start)
 t2 = Task("t2", 3, add23)
 t3 = Task("t3", 5, add50)

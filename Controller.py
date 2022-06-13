@@ -1,7 +1,7 @@
 # Import the 2 defined pumps
 from Pumping import pumpRight
 # Import the defined cooler block
-from Cooling import cooler
+from Cooling import CoolerControl
 # Import the reading of temp
 from TempSensor import tempsens
 # Import the OLED screen
@@ -14,12 +14,14 @@ from PWMPump import pumpLeft
 import time
 
 
+# Initialize the Peltier and the Fan controller
+cooler = CoolerControl()
 #PID controller section
 PID = PIDControl(tempsens.read_temp())
 #Set the PID controller parameters
-PID.setProportional(6)
-PID.setIntegral(0.2)
-PID.setDerivative(0)
+PID.setProportional(8.5)
+PID.setIntegral(2)
+PID.setDerivative(0.2)
 #12500
 #Logging section
 logFile = open("Data.txt", "w")
@@ -39,7 +41,7 @@ def adjustSpeed(ut):
     
     elif ut <= 20:
         cooler.peltLowPower()
-        pumpLeft.speed(int(275*ut))
+        pumpLeft.speed(int(600*ut))
         
     else:
         cooler.peltHighPower()
@@ -53,17 +55,23 @@ PIDC = True
 # Store a time index variable
 timeInd = 0 
 while(True):
-    newTemp = tempsens.read_temp()
+    temps = [] 
+    for i in range(5):
+        temps.append(tempsens.read_temp())
+    newTemp = sum(temps)/5
+
+
     #Write the new temperature to the log file
     logFile = open("Data.txt", "a")
-    logFile.write(str(timeInd)) + "," + str(newTemp) + "\n")
+    logFile.write(str(timeInd) + "," + str(newTemp) + "\n")
     logFile.close()
+
     #Update the oled screen
     oledScreen.setTemp(newTemp)
     oledScreen.printOverview()
 
     #PID controller
-    actuatorValue = -PID.update(newTemp)
+    actuatorValue = PID.update(newTemp)
     print("Actuator:" + str(actuatorValue))
     print("Time:" + str(timeInd))
     print("PID Values:" + PID.overview)

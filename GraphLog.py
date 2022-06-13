@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-file = open("data4I0.2.txt")
+file = open("dataP8.5I2D0.5-1.txt")
 dataset = file.readlines()
 timeData = []
 tempData = []

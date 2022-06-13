@@ -16,5 +16,3 @@ class CoolerControl:
     
     def peltLowPower(self):
         self.peltier.value(1)
-
-cooler = CoolerControl()

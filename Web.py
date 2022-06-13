@@ -42,7 +42,7 @@ mqtt_client_id = bytes('client_'+str(random_num), 'utf-8')
 ADAFRUIT_IO_URL = b'io.adafruit.com' 
 ADAFRUIT_USERNAME = b'Zedrichu'
 ADAFRUIT_IO_KEY = b'aio_cbVo62vnUAsUK9OagVzlUxkW6awu'
-ADAFRUIT_IO_FEEDNAME = b'welcome-feed'
+ADAFRUIT_IO_FEEDNAME = b'mussel-control-system'
 
 client = MQTTClient(client_id=mqtt_client_id, 
                     server=ADAFRUIT_IO_URL, 
