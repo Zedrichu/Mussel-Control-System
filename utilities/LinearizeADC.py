@@ -1,4 +1,5 @@
 # NOTES:
+# Script to perform linearization of ADC ports on the Huzzah32 board
 # Connect pin 25 (A1) with pin 32 (the one to linearize)
 # Set DAC_Vmax (should be 3.15 in all devices, but...)
 # Set the desired ADC_MAX = 2^ADC_BIT_WIDTH-1 and the proper adc.width(ADC.WIDTH_10BIT)

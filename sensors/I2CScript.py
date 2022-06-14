@@ -11,7 +11,7 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 oled.fill(0)
 
 # Define rgb sensor
-sensor = tcs34725.TCS34725(i2c)
+sensor = RGBSensor.TCS34725(i2c)
 #sensor.integration_time(10) #value between 2.4 and 614.4.
 #sensor.gain(16) #must be a value of 1, 4, 16, 60
 

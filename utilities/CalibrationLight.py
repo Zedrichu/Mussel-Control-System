@@ -1,3 +1,17 @@
+#Python
+# -*- coding: utf-8 -*-
+"""
+Calibration script of light sensor.
+
+Description: Calibration of optical density output 
+    based on reference sample solutions
+
+@__Author --> Created by Adrian Zvizdenco aka Zedrichu
+@__Date & Time --> Created on 13/06/2022
+@__Version --> = 1.0
+@__Status --> = Dev
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math

@@ -1,3 +1,17 @@
+#Python
+# -*- coding: utf-8 -*-
+"""
+RGB Sensor TCS34725.
+
+Description: Class defining the RGB sensor TCS34725 used to 
+    sense the concentration of algae referenced in UV light.
+
+@__Author --> Created by Luca Pezzarossa & Adrian Zvizdenco
+@__Date & Time --> Created on 06/06/2022
+@__Version --> = 1.0
+@__Status --> = Test
+"""
+
 import time
 import ustruct
 

@@ -18,7 +18,7 @@ class TaskScheduler:
         for i in self.taskDict.keys():
             if self.clockTime % i == 0:
                 self.taskDict[i].run()
-        print("Time"+str(self.clockTime))
+        print("Time "+str(self.clockTime))
         time.sleep(1)
 
     def reset(self):

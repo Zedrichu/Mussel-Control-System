@@ -1,4 +1,16 @@
-# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
+#Python
+# -*- coding: utf-8 -*-
+"""
+OLED Screen SSD1306.
+
+Description: Classes defining the OLED screen 
+    SSD1306 with I2C and SPI interfaces.
+
+@__Author --> Created by Luca Pezzarossa & Adrian Zvizdenco
+@__Date & Time --> Created on 06/06/2022
+@__Version --> = 1.0
+@__Status --> = Test
+"""
 
 import time
 import framebuf
