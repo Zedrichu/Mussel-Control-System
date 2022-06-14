@@ -41,20 +41,8 @@ class LightSensor:
         rawOD = (-math.log10(rawInten / refInten))
         return rawOD
     
+    def calibratedOD(optDensity):
+        return 16772423.5541501 * optDensity + 43879.89191577297
+    
     def computeConcentration(rawOD, slope, intercept):
         return slope*rawOd + intercept
-
-
-def logCalibration(noSamples):
-    # Open file on board for logging calibration data
-    file = open('calibration.txt', 'w')
-    # Log the reference intensity on clear water sample
-    REF_INTENS = sensor.readIntensity()
-    file.write("Reference Intensity:\n"+str(REF_INTENS)+"\n")
-    # Log the raw intensities & optical density on each of the algae samples 
-    file.write("Intensities & Optical Densities of Samples:\n")
-    for i in range(noSamples):
-        rawI = sensor.readIntensity()
-        rawOD = sensor.computeOD(REF_INTENS, rawI)
-        file.write("{},{}\n".format(rawI, rawOD))
-    file.close()
