@@ -13,7 +13,7 @@ Description: Script graphing the calibration of PID controller parameters.
 
 import matplotlib.pyplot as plt
 
-file = open("data/dataOvernightP8.5I2D0.2.txt")
+file = open("../data/dataOvernightP8.5I2D0.2.txt")
 dataset = file.readlines()
 timeData = []
 tempData = []
@@ -27,8 +27,10 @@ ref = 18
 plt.figure()
 plt.title("PID Controller P-->8.5 I-->2 D-->0.2")
 plt.scatter(timeData, tempData, color = 'k', alpha=0.5)
-plt.plot([0,timeData[-1]], [ref+0.5, ref+0.5], '--', color = 'g')
-plt.plot([0,timeData[-1]], [ref, ref], '--', color = 'r')
-plt.plot([0,timeData[-1]], [ref-0.5, ref-0.5], '--', color = 'b')
-plt.ylim([17,20])
+plt.plot([0,timeData[-1]], [ref+0.2, ref+0.2], '--', color = 'r')
+plt.plot([0,timeData[-1]], [ref, ref], '--', color = 'g')
+plt.plot([0,timeData[-1]], [ref-0.2, ref-0.2], '--', color = 'r')
+plt.ylim([17.5,21.5])
+plt.xlabel("Time (s)")
+plt.ylabel("Temperature (°C)")
 plt.savefig('PIDplot.png')

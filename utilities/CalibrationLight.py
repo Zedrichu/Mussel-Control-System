@@ -18,18 +18,30 @@ import math
 
 calib = open('calibration.txt', 'r')
 data = calib.readlines()
-REF_INTENS = int(data[1])
-REF_CELLS = np.array([0, 5000, 50000, 500000, 1000000])#TODO ask Eugenia
+REF_INTENS = float(data[0])
+REF_CELLS = np.array([20000, 50000, 100000, 200000, 500000, 1000000, 1500000, 2130000])
 RAW_ODs = []
 
-for line in data[3:]:
-    RAW_ODs.append(float(line.split(',')[1]))
+def computeOD(refInten, rawInten):
+    # Apply formula for optical density
+    rawOD = (-math.log10(rawInten / refInten))
+    return rawOD
+
+for line in data:
+    intens = float(line.split()[0])
+    RAW_ODs.append(computeOD(REF_INTENS, intens))
 RAW_ODs = np.array(RAW_ODs)
+
+print(RAW_ODs)
 
 A, B = np.polyfit(RAW_ODs,REF_CELLS,1)
 print("Slope value:{} Intercept value:{}".format(A, B))
 func = A*RAW_ODs + B
 
+plt.title("Calibration of light sensor")
 plt.plot(RAW_ODs,func,color="green")
 plt.plot(RAW_ODs,REF_CELLS,color="red")
+plt.legend(["Fitting Linear Function", "Experimental Optical Density"])
+plt.xlabel("Optical Density")
+plt.ylabel("Concentration of algaes (cells/mL)")
 plt.savefig('CalibOD.png')
