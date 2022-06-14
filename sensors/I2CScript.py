@@ -54,3 +54,4 @@ while True:
 
     # Wait 1 second before repeating
     time.sleep(1)
+

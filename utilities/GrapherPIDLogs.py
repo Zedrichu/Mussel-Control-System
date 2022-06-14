@@ -27,6 +27,8 @@ ref = 18
 plt.figure()
 plt.title("PID Controller P-->8.5 I-->2 D-->0.2")
 plt.scatter(timeData, tempData, color = 'k', alpha=0.5)
+plt.plot([0,timeData[-1]], [ref+0.5, ref+0.5], '--', color = 'g')
 plt.plot([0,timeData[-1]], [ref, ref], '--', color = 'r')
+plt.plot([0,timeData[-1]], [ref-0.5, ref-0.5], '--', color = 'b')
 plt.ylim([17,20])
 plt.savefig('PIDplot.png')

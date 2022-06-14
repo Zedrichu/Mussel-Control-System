@@ -29,12 +29,12 @@ class LightSensor:
         self.led.value(1)
         intensi = [] 
         # Read triplicates of voltages/intensity
-        for i in range(3):
+        for i in range(100):
             intensi.append(self.adc.read())
-            time.sleep(0.1)
+            time.sleep(0.01)
         # Turn off the LED until next measurement
         self.led.value(0)
-        return sum(intensi)/3
+        return sum(intensi)/100
     
     def computeOD(refInten, rawInten):
         # Apply formula for optical density
@@ -44,16 +44,17 @@ class LightSensor:
     def computeConcentration(rawOD, slope, intercept):
         return slope*rawOd + intercept
 
-    def logCalibration(noSamples):
-        # Open file on board for logging calibration data
-        file = open('calibration.txt', 'w')
-        # Log the reference intensity on clear water sample
-        REF_INTENS = self.readIntensity()
-        file.write("Reference Intensity:\n"+str(REF_INTENS)+"\n")
-        # Log the raw intensities & optical density on each of the algae samples 
-        file.write("Intensities & Optical Densities of Samples:\n")
-        for i in range(noSamples):
-            rawI = self.readIntensity()
-            rawOD = self.computeOD(REF_INTENS, rawI)
-            file.write("{},{}\n".format(rawI, rawOD))
-        file.close()
+
+def logCalibration(noSamples):
+    # Open file on board for logging calibration data
+    file = open('calibration.txt', 'w')
+    # Log the reference intensity on clear water sample
+    REF_INTENS = sensor.readIntensity()
+    file.write("Reference Intensity:\n"+str(REF_INTENS)+"\n")
+    # Log the raw intensities & optical density on each of the algae samples 
+    file.write("Intensities & Optical Densities of Samples:\n")
+    for i in range(noSamples):
+        rawI = sensor.readIntensity()
+        rawOD = sensor.computeOD(REF_INTENS, rawI)
+        file.write("{},{}\n".format(rawI, rawOD))
+    file.close()

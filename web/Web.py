@@ -6,18 +6,22 @@ import gc
 import sys
 from TempSensor import TempSensor
 
-
 systemKillSwitch = False
 
 # Callback for receiving data from feed
 def feed_callback(topic, msg):
+    global systemKillSwitch
     print('Subscribed to feed:\n Received Data -->  Topic = {}, Msg = {}\n'.format(topic, msg))
     if topic == b'Zedrichu/feeds/System':
-        systemKillSwitch = msg == b'OFF'
+        print("Im here!")
+        if msg == b'OFF':
+            print("Here!")
+            systemKillSwitch = True
+    
 
 # WiFi connection information
-WIFI_SSID = 'OnePlus 6T'
-WIFI_PASSWORD = '12345678'
+WIFI_SSID = 'Pixel 5'
+WIFI_PASSWORD = 'lenovoi7'
 
 # Turn off the WiFi Access Point
 ap_if = network.WLAN(network.AP_IF)
@@ -98,11 +102,10 @@ while True:
         # Subscribe.  Non-blocking check for a new message.  
         client.check_msg()
 
+
         time.sleep(SUBSCRIBE_CHECK_PERIOD_IN_SEC)
         accum_time += SUBSCRIBE_CHECK_PERIOD_IN_SEC
 
-        if systemKillSwitch:
-            raise KeyboardInterrupt
 
     except KeyboardInterrupt:
         print('Ctrl-C pressed...exiting')
