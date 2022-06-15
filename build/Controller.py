@@ -5,7 +5,7 @@ from Cooling import CoolerControl
 # Import the reading of temp
 from TempSensor import TempSensor
 # Import the OLED screen
-from OLED import Screen
+from OLED import OLEDScreen
 # Import the PID controller
 from PIDController import PIDControl
 # Import PWM
@@ -14,7 +14,7 @@ from PWMPump import PumpPWM
 import time
 
 tempsens = TempSensor()
-oledScreen = Screen()
+oledScreen = OLEDScreen()
 pumpAlgae = PumpControl(15,33)
 pumpCool = PumpPWM(27,12)
 # Initialize the Peltier and the Fan controller
@@ -56,11 +56,14 @@ PIDC = True
 timeInd = 0 
 while(True):
     temps = [] 
-    for i in range(5):
+    for i in range(10):
         temps.append(tempsens.read_temp())
-    newTemp = sum(temps)/5
+    newTemp = sum(temps)/10
 
-    # Log-file 
+    # Log-file
+    file = open("pid.txt", "a")
+    file.write(str(timeInd)+","+str(newTemp)+"\n")
+    file.close()
 
     #Update the oled screen
     oledScreen.setTemp(newTemp)
@@ -70,6 +73,7 @@ while(True):
     #PID controller
     actuatorValue = PID.update(newTemp)
     print("Actuator:" + str(actuatorValue))
+    print("Avg Temperature:" + str(newTemp))
     print("Time:" + str(timeInd))
     print("PID Values:" + PID.overview)
     timeInd += 10
@@ -79,6 +83,7 @@ while(True):
     time.sleep(10)
 
     # Run for specific number of seconds
-    if timeInd > 600:
+    if timeInd > 1200:
         break
 
+pumpCool.speed(0)

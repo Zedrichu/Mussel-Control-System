@@ -11,9 +11,7 @@ Description: Class defining thermal sensing device with linearized ADC voltages.
 @__Status --> = Test
 """
 
-from machine import Pin
-from machine import ADC
-from machine import DAC
+from machine import Pin, ADC, DAC
 from math import log
 
 import machine
@@ -45,8 +43,8 @@ class TempSensor:
 
         # Average of the NUM_SAMPLES and look it up in the table after linearization
         raw_average = sum(raw_read)/NUM_SAMPLES
-        print('raw_avg = ' + str(raw_average))
-        print('V_measured = ' + str(adc_V_lookup[round(raw_average)]))
+        #print('raw_avg = ' + str(raw_average))
+        #print('V_measured = ' + str(adc_V_lookup[round(raw_average)]))
 
         # Convert the voltage to resistance
         raw_average = ADC_MAX * adc_V_lookup[round(raw_average)]/ADC_Vmax
@@ -60,19 +58,17 @@ class TempSensor:
         print('Temperature: {}°C'.format(steinhart))
         return steinhart
     
-    # Method to perform continuosly temperature measurements
-    def loop_temp(self):
-        print("I'm alive!\n")
-        utime.sleep_ms(2000)
+# Method to perform continuosly temperature measurements
+def loop_temp():
+    print("I'm alive!\n")
+    utime.sleep_ms(2000)
 
-        temp_sens = init_temp_sensor()
+    temp_sens = TempSensor()
 
-        sample_last_ms = 0
-        SAMPLE_INTERVAL = 1000
+    sample_last_ms = 0
+    SAMPLE_INTERVAL = 1000
 
-        while (True):
-            if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
-                temp = read_temp(temp_sens)
-                sample_last_ms = utime.ticks_ms()
-
-tempsens = TempSensor()
+    while (True):
+        if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
+            temp = temp_sens.read_temp()
+            sample_last_ms = utime.ticks_ms()

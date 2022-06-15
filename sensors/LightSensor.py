@@ -43,8 +43,5 @@ class LightSensor:
         rawOD = (-math.log10(rawInten / self.ref))
         return rawOD
     
-    def calibratedOD(optDensity):
+    def computeConc(optDensity):
         return 16772423.5541501 * optDensity + 43879.89191577297
-    
-    def computeConcentration(rawOD, slope, intercept):
-        return slope*rawOd + intercept

@@ -1,7 +1,21 @@
+#Python
+# -*- coding: utf-8 -*-
+"""
+OLED Screen.
+
+Description: Class implementing the use of the OLED screen on the board.
+
+@__Author --> Created by Adrian Zvizdenco & Jeppe Mikkelsen
+@__Date & Time --> Created on 13/06/2022
+@__Email --> = adrzvizdencojr@gmail.com
+@__Version --> = 1.1
+@__Status --> = Test
+"""
+
 import ssd1306
 from machine import I2C, Pin
 
-class Screen:
+class OLEDScreen:
     def __init__(self):
         i2c = I2C(scl=Pin(22), sda=Pin(23), freq=10000)
         self.oled = ssd1306.SSD1306_I2C(128, 64, i2c)
@@ -17,12 +31,14 @@ class Screen:
     def setOD(self, od):
         self.lines[2] = "Last OD:" + str(od)
 
+    def setMessage(self, msg):
+        self.lines[3] = msg
+
     def printOverview(self):
         self.oled.fill(0)
         self.oled.text(self.lines[0], 0, 8)
         self.oled.text(self.lines[1], 0, 16)
         self.oled.text(self.lines[2], 0, 24)
+        self.oled.text(self.lines[2], 0, 32)
         self.oled.show()
-            
 
-oledScreen = Screen()

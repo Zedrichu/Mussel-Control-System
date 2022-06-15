@@ -13,7 +13,7 @@ Description: Script graphing the calibration of PID controller parameters.
 
 import matplotlib.pyplot as plt
 
-file = open("../data/dataOvernightP8.5I2D0.2.txt")
+file = open("pidSpike.txt")
 dataset = file.readlines()
 timeData = []
 tempData = []

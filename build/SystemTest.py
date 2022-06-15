@@ -3,7 +3,7 @@ from BitBangPump import PumpControl
 # Import the defined cooler block
 from Cooling import CoolerControl
 # Import the reading of temp
-from TempSensor import tempsens
+from TempSensor import TempSensor
 # Import the PID controller
 from PIDController import PIDControl
 # Import PWM
@@ -13,8 +13,10 @@ import time
 # Import LightSensor
 from LightSensor import LightSensor
 # Import OLED
-from OlED import oledScreen
+from OlED import OLEDScreen
 
+oledScreen = OLEDScreen()
+tempsens = TempSensor()
 #Light initialization
 light = LightSensor()
 

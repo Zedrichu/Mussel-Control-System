@@ -13,9 +13,7 @@ def feed_callback(topic, msg):
     global systemKillSwitch
     print('Subscribed to feed:\n Received Data -->  Topic = {}, Msg = {}\n'.format(topic, msg))
     if topic == b'Zedrichu/feeds/System':
-        print("Im here!")
         if msg == b'OFF':
-            print("Here!")
             systemKillSwitch = True
     
 
@@ -91,14 +89,7 @@ while True:
                            bytes(str(temp), 'utf-8'), 
                            qos=0) 
             accum_time = 0                
-            
-            # value = "OFF" if systemKillSwitch else "ON"
-            # print('Publish:  killSwitch = {}\n'.format(value))    
-            # client.publish(system_feedname,    
-            #                bytes(str(value), 'utf-8'), 
-            #                qos=0) 
-            # accum_time = 0  
-
+ 
         # Subscribe.  Non-blocking check for a new message.  
         client.check_msg()
 
