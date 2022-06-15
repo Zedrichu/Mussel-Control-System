@@ -13,6 +13,7 @@ Description: Class defining the digital light sensor TSL257 used on micro-contro
 
 from machine import Pin, ADC
 import time
+import math
 
 class LightSensor:
     def __init__(self):
@@ -23,6 +24,7 @@ class LightSensor:
         # Pin component for LED associated in in-line measurement block
         self.led = Pin(21, Pin.OUT)
         self.led.value(1)
+        self.ref = 3646.86
 
     def readIntensity(self):
         # Make sure the LED is lightened up
@@ -36,9 +38,9 @@ class LightSensor:
         self.led.value(0)
         return sum(intensi)/100
     
-    def computeOD(refInten, rawInten):
+    def computeOD(self, rawInten):
         # Apply formula for optical density
-        rawOD = (-math.log10(rawInten / refInten))
+        rawOD = (-math.log10(rawInten / self.ref))
         return rawOD
     
     def calibratedOD(optDensity):

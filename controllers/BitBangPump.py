@@ -48,5 +48,5 @@ class PumpControl:
         utime.sleep_us(sleep)
 
 # Direction in pin 15, step in pin 33
-pumpAlgae = PumpControl(15,33)
+#pumpAlgae = PumpControl(15,33)
 #pumpRight.cycle(100)
