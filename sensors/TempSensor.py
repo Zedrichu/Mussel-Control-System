@@ -74,3 +74,5 @@ class TempSensor:
             if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
                 temp = read_temp(temp_sens)
                 sample_last_ms = utime.ticks_ms()
+
+tempsens = TempSensor()

@@ -35,15 +35,20 @@ class Task:
     def run(self):  
         self.func()
         print(self.name + "executed!")
+
+
         
-t1 = Task("t1", 2, start)
-t2 = Task("t2", 3, add23)
-t3 = Task("t3", 5, add50)
+#t1 = Task("t1", 2, start)
+#t2 = Task("t2", 3, add23)
+#t3 = Task("t3", 5, add50)
 
-schedule = TaskScheduler(10)
-schedule.addTask(t1)
-schedule.addTask(t2)
-schedule.addTask(t3)
+#schedule = TaskScheduler(10)
+#schedule.addTask(t1)
+#schedule.addTask(t2)
+#schedule.addTask(t3)
 
-while True:
-    schedule.run()
+
+#for i in range(10):
+ #   schedule.run()
+    
+

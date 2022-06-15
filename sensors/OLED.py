@@ -2,7 +2,7 @@ import ssd1306
 from machine import I2C, Pin
 
 class Screen:
-    def __init__(self)
+    def __init__(self):
         i2c = I2C(scl=Pin(22), sda=Pin(23), freq=10000)
         self.oled = ssd1306.SSD1306_I2C(128, 64, i2c)
         self.oled.fill(0)
@@ -13,9 +13,9 @@ class Screen:
     def setTemp(self, temp):
         self.lines[1] = "Temperature:" + str(temp)
     
-    #Last time fed
-    def setFeed(self, feed):
-        self.lines[2] = "Last Feed:" + str(feed)
+    #Last OD
+    def setOD(self, od):
+        self.lines[2] = "Last OD:" + str(od)
 
     def printOverview(self):
         self.oled.fill(0)
