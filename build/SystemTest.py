@@ -1,3 +1,5 @@
+# Import the LightSensor
+from LightSensor import LightSensor
 # Import the 2 defined pumps
 from BitBangPump import PumpControl
 # Import the defined cooler block
