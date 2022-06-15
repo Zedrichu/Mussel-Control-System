@@ -92,20 +92,21 @@ while True:
                            qos=0) 
             accum_time = 0                
             
-            value = "OFF" if systemKillSwitch else "ON"
-            print('Publish:  killSwitch = {}\n'.format(value))    
-            client.publish(system_feedname,    
-                           bytes(str(value), 'utf-8'), 
-                           qos=0) 
-            accum_time = 0  
+            # value = "OFF" if systemKillSwitch else "ON"
+            # print('Publish:  killSwitch = {}\n'.format(value))    
+            # client.publish(system_feedname,    
+            #                bytes(str(value), 'utf-8'), 
+            #                qos=0) 
+            # accum_time = 0  
 
         # Subscribe.  Non-blocking check for a new message.  
         client.check_msg()
 
-
         time.sleep(SUBSCRIBE_CHECK_PERIOD_IN_SEC)
         accum_time += SUBSCRIBE_CHECK_PERIOD_IN_SEC
 
+        if systemKillSwitch:
+            sys.exit()
 
     except KeyboardInterrupt:
         print('Ctrl-C pressed...exiting')

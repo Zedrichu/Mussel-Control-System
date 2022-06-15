@@ -9,7 +9,7 @@ from OLED import oledScreen
 # Import the PID controller
 from PID import PIDControl
 # Import PWM
-from PWMPump import pumpLeft
+from PWMPump import PumpPWM
 # Import time
 import time
 
