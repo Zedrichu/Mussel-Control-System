@@ -48,8 +48,10 @@ class TempSensor:
 
         # Convert the voltage to resistance
         raw_average = ADC_MAX * adc_V_lookup[round(raw_average)]/ADC_Vmax
+        # print(raw_average)
+        # print(len(adc_V_lookup))
         resistance = (SER_RES * raw_average) / (ADC_MAX - raw_average)
-        print('Thermistor resistance: {} ohms'.format(resistance))
+        # print('Thermistor resistance: {} ohms'.format(resistance))
 
         # Convert resistance to temperature
         steinhart  = -log(resistance / NOM_RES) / THERM_B_COEFF

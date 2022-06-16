@@ -5,6 +5,7 @@ import os, gc, sys
 from TempSensor import TempSensor
 from Network import Network
 
+#System Properties
 systemProperties = {
     "systemActive": True,
     "PIDActive": True,
@@ -12,7 +13,8 @@ systemProperties = {
     "subscriberActive": False,
     "connectedOnline": False,
     "wifiConnection": False,
-    "temperature": None
+    "temperature": None,
+    "concentration": None
 }
 
 # Initialize sensors on board

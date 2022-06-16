@@ -59,6 +59,7 @@ class Task:
         self.func()
         end = time.ticks_us()
         diff = time.ticks_diff(end, start)
+        print("Difference: " + str(diff))
         #Diff microseconds
         print(self.name + "executed!")
 
