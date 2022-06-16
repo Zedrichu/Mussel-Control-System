@@ -19,7 +19,7 @@ import math
 calib = open('calibration.txt', 'r')
 data = calib.readlines()
 REF_INTENS = float(data[0])
-REF_CELLS = np.array([20000, 50000, 100000, 200000, 500000, 1000000, 1500000, 2130000])
+REF_CELLS = np.array([8000, 37000, 125000, 220000, 438000, 665000, 943000, 1166000])
 RAW_ODs = []
 
 def computeOD(refInten, rawInten):

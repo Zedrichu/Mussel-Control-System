@@ -6,6 +6,9 @@ import gc
 import sys
 from TempSensor import TempSensor
 
+
+
+
 systemKillSwitch = False
 
 # Callback for receiving data from feed
@@ -18,8 +21,8 @@ def feed_callback(topic, msg):
     
 
 # WiFi connection information
-WIFI_SSID = 'Pixel 5'
-WIFI_PASSWORD = 'lenovoi7'
+WIFI_SSID = 'Marius - iPhone'
+WIFI_PASSWORD = 'bredo123'
 
 # Turn off the WiFi Access Point
 ap_if = network.WLAN(network.AP_IF)
@@ -54,8 +57,13 @@ mqtt_client_id = bytes('client_'+str(random_num), 'utf-8')
 ADAFRUIT_IO_URL = b'io.adafruit.com' 
 ADAFRUIT_USERNAME = b'Zedrichu'
 ADAFRUIT_IO_KEY = b'aio_cbVo62vnUAsUK9OagVzlUxkW6awu'
-ADAFRUIT_IO_FEEDNAME = b'Temperature'
 
+#Feeds
+ADAFRUIT_IO_FEEDNAME = b'Temperature'
+ADAFRUIT_IO_FEEDNAME2 = b'Stream'
+ADAFRUIT_IO_FEEDNAME3 = b'Algae concentration'
+
+#Client connection
 client = MQTTClient(client_id=mqtt_client_id, 
                     server=ADAFRUIT_IO_URL, 
                     user=ADAFRUIT_USERNAME, 
@@ -71,7 +79,13 @@ except Exception as e:
 #
 # format of feed name:  
 #   "ADAFRUIT_USERNAME/feeds/ADAFRUIT_IO_FEEDNAME"
+#mqtt's
 mqtt_feedname = bytes('{:s}/feeds/{:s}'.format(ADAFRUIT_USERNAME, ADAFRUIT_IO_FEEDNAME), 'utf-8')
+mqtt_feedname2 = bytes('{:s}/feeds/{:s}'.format(ADAFRUIT_USERNAME, ADAFRUIT_IO_FEEDNAME2), 'utf-8')
+mqtt_feedname3 = bytes('{:s}/feeds/{:s}'.format(ADAFRUIT_USERNAME, ADAFRUIT_IO_FEEDNAME3), 'utf-8')
+
+
+
 system_feedname = bytes('{:s}/feeds/{:s}'.format(ADAFRUIT_USERNAME, b'System'), 'utf-8')
 PUBLISH_PERIOD_IN_SEC = 10
 SUBSCRIBE_CHECK_PERIOD_IN_SEC = 0.5
@@ -79,15 +93,34 @@ client.set_callback(feed_callback)
 client.subscribe(system_feedname)
 accum_time = 0 
 tempsens = TempSensor()
+
+status = ""
+
+
 while True:
     try:
         # Publish
         if accum_time >= PUBLISH_PERIOD_IN_SEC:
             temp = tempsens.read_temp()
+            temp = round(temp,2)
             print('Publish:  temperature = {}\n'.format(temp))
             client.publish(mqtt_feedname,    
                            bytes(str(temp), 'utf-8'), 
                            qos=0) 
+            if (temp > 24):
+                status = "| Mussels | WARNING | Temperature is critical  | " + str(temp)
+                client.publish(mqtt_feedname2,bytes(status, 'utf-8'),qos=0)
+
+            else:
+                status = "| Mussels |         | Temperature is okay      | " + str(temp)
+                client.publish(mqtt_feedname2,bytes(status, 'utf-8'),qos=0)
+
+            con = 0.2
+            client.publish(mqtt_feedname3,bytes(str(con),'utf-8'),qos=0)
+            
+            status = "|  Algae  |         | Concentration is okay    | " + str(con)
+            client.publish(mqtt_feedname2,bytes(status,'utf-8'),qos=0)
+            
             accum_time = 0                
  
         # Subscribe.  Non-blocking check for a new message.  
@@ -103,3 +136,5 @@ while True:
         print('Ctrl-C pressed...exiting')
         client.disconnect()
         sys.exit()
+
+

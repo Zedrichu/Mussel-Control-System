@@ -72,3 +72,5 @@ def loop_temp():
         if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
             temp = temp_sens.read_temp()
             sample_last_ms = utime.ticks_ms()
+
+tempsens = TempSensor()
