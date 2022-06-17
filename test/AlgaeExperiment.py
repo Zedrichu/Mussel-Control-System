@@ -5,8 +5,6 @@ from BitBangPump import PumpControl
 from Cooling import CoolerControl
 # Import the reading of temp
 from TempSensor import TempSensor
-# Import the OLED screen
-from OLED import Screen
 # Import the PID controller
 from PIDController import PIDControl
 # Import PWM
@@ -19,7 +17,6 @@ from LightSensor import LightSensor
 print("hello")
 #Init of classes
 tempsens = TempSensor()
-oledScreen = Screen()
 pumpAlgae = PumpPWM(15,33) #Changed for overnight experiment
 pumpCool = PumpControl(27,12) #Changed for overnight experiment
 light = LightSensor()
@@ -29,7 +26,7 @@ cooler.fanOn()
 cooler.peltLowPower()
 
 #Logging file
-logFile = open("AlgaeEx.txt","w")
+logFile = open("AlgaeEx.txt","a")
 logFile.write("Time, OD, Concentration, Intensity\n")
 logFile.close()
 
@@ -43,7 +40,7 @@ while(True):
         inten = light.readIntensity()
         od = light.computeOD(inten)
         con = light.computeConc(od)
-        print("Time :" + str(timeInd) + "OD: " + str(od) + " Concentration: " + str(con))
+        print("Time :" + str(timeInd) + "OD: " + str(od) + " Concentration: " + str(con) + " Intensity: " + str(inten))
         #logging
         logFile = open("AlgaeEx.txt","a")
         logFile.write(str(timeInd) + "," + str(od) + "," + str(con) + "," + str(inten) + "\n")
@@ -57,3 +54,4 @@ while(True):
             logFile.write("-------------------" + "\n")
             logFile.close()
         break
+
