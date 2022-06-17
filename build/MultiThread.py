@@ -12,34 +12,37 @@ Description: Class implementing simple task scheduler for multi-threading on boa
 @__Status --> = Dev
 """
 
-import time
 import utime
 
 class TaskScheduler:
     # Initializing constructor
-    def __init__(self, ticks):
-        self.ticks = ticks
+    def __init__(self, tick, divs):
+        self.tick = tick
+        self.divs = divs
         self.taskDict = {}
         self.clockTime = 0
     
     # Method to add a new task to be executed
-    def addTask(self, task):
-        self.taskDict[task.freq] = task
+    def addTask(self, tick, task):
+        self.taskDict[tick] = task
+
+    def removeTask(self, task):
+        del self.taskDict[task.freq]
 
     # Method to run the task scheduler continuously
     def run(self):
-        if self.clockTime > self.ticks:
+        if self.clockTime > self.divs:
             self.clockTime = 1
         else:
             self.clockTime += 1
 
-        for i in self.taskDict.keys():
-            if self.clockTime % i == 0:
-                print("Running task: " + self.taskDict[i].name)
-                print("Task Dictionary: " + str(self.taskDict))
-                self.taskDict[i].run()
-        print("Time "+str(self.clockTime))
-        time.sleep(1)
+        if self.clockTime in self.taskDict.keys():    
+            print("Running task: " + self.taskDict[self.clockTime].name)
+            print("Task Dictionary: " + str(self.taskDict))
+            self.taskDict[self.clockTime].exec()
+        print("Tick "+str(self.clockTime))
+        utime.sleep(self.tick)
+
     
     # Method to reset the task scheduler
     def reset(self):
@@ -48,32 +51,36 @@ class TaskScheduler:
     
 # Class defining the function and frequency of a task to be executed
 class Task:
-    def __init__(self, name, freq, func):
-        self.name = name 
-        self.freq = freq
+    def __init__(self, name, func, callback):
+        self.name = name
         self.func = func
+        self.cb = callback
 
-    def run(self):
+    def exec(self):
         #utime start
-        start = time.ticks_us()
+        start = utime.ticks_us()
         self.func()
-        end = time.ticks_us()
-        diff = time.ticks_diff(end, start)
+        end = utime.ticks_us()
+        diff = utime.ticks_diff(end, start)
         print("Difference: " + str(diff))
         #Diff microseconds
-        print(self.name + "executed!")
+        print(self.name + " executed!")
 
+    def __str__(self):
+        return self.name
+    
+    def callB(self):
+        self.cb()
 
+# def start():
+#     x = 2.5
+#     print("one task")
 
-def start():
-    x = 2.5
-    print("one task")
+# def add23():
+#     print("23")
 
-def add23():
-    print("23")
-
-def add50():
-    print("50")
+# def add50():
+#     print("50")
 
 # __________Small Example____________
 #t1 = Task("t1", 2, start)

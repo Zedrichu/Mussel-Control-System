@@ -21,9 +21,11 @@ class PumpPWM:
         self.dir = Pin(dir, Pin.OUT)
         self.pwm = PWM(Pin(step), freq=50,duty=512)
     
+    # Time 200
     def switch(self):
         self.dir.value( 1-self.dir.value() )
 
+    # Time 350
     def speed(self,speed):
         self.pwm.freq(speed)
     

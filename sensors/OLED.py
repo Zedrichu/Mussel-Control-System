@@ -24,16 +24,20 @@ class OLEDScreen:
         self.oled.show()
         self.lines = ["System Overview", "", "", ""]
     
+    # Time 1600
     def setTemp(self, temp):
         self.lines[1] = "Temperature:" + str(temp)
     
-    #Last OD
+    #Last OD 
+    # Time 1600
     def setOD(self, od):
         self.lines[2] = "Last OD:" + str(od)
 
+    # Time 1600
     def setMessage(self, msg):
         self.lines[3] = msg
 
+    # Time 1070000
     def printOverview(self):
         self.oled.fill(0)
         self.oled.text(self.lines[0], 0, 8)

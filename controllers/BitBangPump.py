@@ -24,15 +24,18 @@ class PumpControl:
         self.step = Pin(step, Pin.OUT)
 
     # Perform one step (flip value of the step pin)
+    # Time 200 ticks
     def stepOn(self):
         self.step.value( 1-self.step.value() )
     
     # Switch direction of the rotating stepper motor
+    # Time 200 ticks
     def switchDir(self):
         self.dir.value( 1-self.dir.value() )
 
     # Cycle for given amount of steps
-    # 1600 steps - 1 full rotation    
+    # 1600 steps - 1 full rotation  
+    # Time equation 200+200*steps  
     def cycle(self, steps):
         for i in range(steps):
             self.stepOn()

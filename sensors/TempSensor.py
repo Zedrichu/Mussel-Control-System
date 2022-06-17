@@ -35,6 +35,7 @@ class TempSensor:
         self.adc.width(ADC.WIDTH_10BIT)
         
     # Method to read the temperature from the thermistor
+    # Time 13000 Microseconds
     def read_temp(self):
         raw_read = []
         # Collect NUM_SAMPLES

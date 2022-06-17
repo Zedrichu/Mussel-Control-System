@@ -24,8 +24,9 @@ class LightSensor:
         # Pin component for LED associated in in-line measurement block
         self.led = Pin(21, Pin.OUT)
         self.led.value(1)
-        self.ref = 3771.0
+        self.ref = 3790
 
+    # Time ticks 101700 micro seconds
     def readIntensity(self):
         # Make sure the LED is lightened up
         self.led.value(1)
@@ -38,10 +39,12 @@ class LightSensor:
         self.led.value(0)
         return sum(intensi)/100
     
+    # Time Ticks 1018000
     def computeOD(self, rawInten):
         # Apply formula for optical density
         rawOD = (-math.log10(rawInten / self.ref))
         return rawOD
     
+    # Time Ticks 1018000
     def computeConc(self,optDensity):
-        return 12805950.732757092 * optDensity + 29607.542956931058
+        return 12805950.732757092 * optDensity -13111.52773752017

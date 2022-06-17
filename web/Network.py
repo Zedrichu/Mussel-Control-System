@@ -14,9 +14,13 @@ class Network:
         self.wifi.active(True)
 
     def connect(self):
+        print("In connect")
+        self.wifi.disconnect()
         self.wifi.connect(self.WIFI_SSID, self.WIFI_PASSWORD)
+        print("Connecting to WiFi network...")
 
     def waitConnection(self):
+        print("Waiting for connection to establish...")
         # Wait until the device is connected to the WiFi network
         MAX_ATTEMPTS = 10
         attempt_count = 0

@@ -10,16 +10,20 @@ class PIDControl:
         self.e = [self.v-self.r]
         self.his = 1
 
+    # Time 200
     def setProportional(self, value):
         self.P = value
-        
+
+    # Time 200
     def setIntegral(self, value):
         self.I = value
 
+    # Time 200
     def setDerivative(self, value):
         self.D = value
     
     #Influcenced by slides of PID update
+    
     def update(self, newTemp):
         if self.his > 10:
             self.e.pop(0)

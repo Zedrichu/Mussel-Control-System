@@ -16,9 +16,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-calib = open('calibration.txt', 'r')
+calib = open('./utilities/calibration.txt', 'r')
 data = calib.readlines()
-REF_INTENS = float(data[0])
+REF_INTENS = 3790
 REF_CELLS = np.array([8000, 37000, 125000, 220000, 438000, 665000, 943000, 1166000])
 RAW_ODs = []
 

@@ -116,21 +116,3 @@ def publishSubscribeFeeds(client):
 
 publishSubscribeFeeds(client)
 
-# For Jeppe & Marius
-"""
-    1. Implement a stopwatch for every function to be used in the TaskScheduler.
-    Use something like:
-        start = utime.ticks_ms()
-        function()
-        end = utime.ticks_ms()
-        utime.ticks_diff(end, start) - time consumed by function in miliseconds
-
-    2. Every function that you write to be added to the TaskScheduler, should be
-    recorded and fixed. If we have functions running in more than one division (tick)
-    of the TaskScheduler it has to be allowed to run on consecutive clock times.
-
-    3. Create a table of functions in the TaskScheduler with priority, frequency or time.
-    We might also implement the TaskScheduler to allow fixed timed execution instead of 
-    frequency.
-    
-"""
