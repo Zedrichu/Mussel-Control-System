@@ -36,10 +36,11 @@ class TaskScheduler:
         else:
             self.clockTime += 1
 
-        if self.clockTime in self.taskDict.keys():    
-            print("Running task: " + self.taskDict[self.clockTime].name)
-            print("Task Dictionary: " + str(self.taskDict))
-            self.taskDict[self.clockTime].exec()
+        for freq in self.taskDict.keys():    
+            if self.clockTime % freq == 0:
+                print("Running task: " + self.taskDict[freq].name)
+                print("Task Dictionary: " + str(self.taskDict))
+                self.taskDict[freq].exec()
         print("Tick "+str(self.clockTime))
         utime.sleep(self.tick)
 
@@ -51,10 +52,9 @@ class TaskScheduler:
     
 # Class defining the function and frequency of a task to be executed
 class Task:
-    def __init__(self, name, func, callback):
+    def __init__(self, name, func):
         self.name = name
         self.func = func
-        self.cb = callback
 
     def exec(self):
         #utime start
@@ -69,8 +69,6 @@ class Task:
     def __str__(self):
         return self.name
     
-    def callB(self):
-        self.cb()
 
 # def start():
 #     x = 2.5

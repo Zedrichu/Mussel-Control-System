@@ -37,12 +37,10 @@ tLED = Task("Blink orange", blinkLEDO)
 tLED2 = Task("Blink green", blinkLEDG)
 
 #Adding Tasks to Task Scheduler
-for tick in range(0, taskScheduler.divs, 10):
-    taskScheduler.addTask(tick, tTemp)
-for tick in range(0, taskScheduler.divs, 5):    
-    taskScheduler.addTask(tick, tLED)
-for tick in range(0, taskScheduler.divs, 4):
-    taskScheduler.addTask(tick, tLED2)
+
+taskScheduler.addTask(1, tTemp)
+taskScheduler.addTask(2, tLED)
+taskScheduler.addTask(3, tLED2)
 
 while(True):
     taskScheduler.run()

@@ -91,17 +91,12 @@ def updateTemp():
     temp = round(temp,2)
     props['temperature'] = temp
 
-main.addTask(2,("Update Temp",updateTemp))  
-
 def updateConc(): #TODO
     global props
     conc = 0.2
     props['concentration'] = conc
 
 status = ""
-
-main.addTask(2,("Update Conc",updateConc))
-
 accum_time = 0 
 
 tempsens = TempSensor()

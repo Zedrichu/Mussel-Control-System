@@ -11,7 +11,7 @@ systemProperties = {
     "PIDActive": True,
     "publisherActive": False,
     "subscriberActive": False,
-    "connectedOnline": False,
+    "aioConnection": False,
     "wifiConnection": False,
     "temperature": None,
     "concentration": None
