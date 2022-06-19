@@ -19,10 +19,9 @@ WIFI_PASSWORD = 'letmeinnow'
 #System Properties
 sysprops = {
     "systemActive": True,
-    "publisherActive": False,
-    "subscriberActive": False,
     "aioConnection": False,
     "wifiConnection": False,
+    "logsRequired" : True,
     "tempSensing": {
         "sensorActive" : True,
         "temperature" : 0,
@@ -163,7 +162,9 @@ def updateConc():
     print("Updated Concentration!")
 
 def logger():
-    print("Information logged in file on board.")
+    global sysprops
+    if sysprops['logsRequired']:
+        print("Information logged in file on board.")
 
 def recover():
     print("Preparation for feeding is done.")
@@ -184,6 +185,16 @@ def offlineMode():
         print('Running offline mode with logs on board...')
         offline.run()
 
+def updateFeedLog():
+    if sysprops['logsRequired'] and sysprops['aioConnection']:
+        # Send all logs to feed on server
+        print("Updating feeds with offline information in logs...")
+
+def publisher():
+    print("Publishing information on AIO server...")
+
+def subscriber():
+    print("Subscribed to feeds and checking incoming messages...")
 
 
 online.addTask(1, Task("Temperature Measurement", updateTemp))
