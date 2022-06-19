@@ -17,7 +17,8 @@ import time
 import utime
 
 class PumpPWM:
-    def __init__(self, dir, step) -> None:
+    # Default direction in 27, step in 12 for Cooling
+    def __init__(self, dir=27, step=12) -> None:
         self.dir = Pin(dir, Pin.OUT)
         self.pwm = PWM(Pin(step), freq=50,duty=512)
     
@@ -29,7 +30,3 @@ class PumpPWM:
     def speed(self,speed):
         self.pwm.freq(speed)
     
-
-
-# Direction in pin 27, step in pin 12
-#pumpCooling = PumpPWM(27,12)

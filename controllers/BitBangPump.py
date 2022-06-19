@@ -17,9 +17,10 @@ import time
 import utime
 
 
-class PumpControl:
+class PumpBB:
     # Initialize the board pins used for defining direction & step
-    def __init__(self, dir, step) -> None:
+    # For algae feeding default direction in 15 and step in 33
+    def __init__(self, dir=15, step=33) -> None:
         self.dir = Pin(dir, Pin.OUT)
         self.step = Pin(step, Pin.OUT)
 
@@ -51,5 +52,5 @@ class PumpControl:
         utime.sleep_us(sleep)
 
 # Direction in pin 15, step in pin 33
-#pumpAlgae = PumpControl(15,33)
+#pumpAlgae = PumpBB(15,33)
 #pumpRight.cycle(100)

@@ -1,7 +1,7 @@
 # Import the 2 defined pumps
-from BitBangPump import PumpControl
+from BitBangPump import PumpBB
 # Import the defined cooler block
-from Cooling import CoolerControl
+from Cooling import Cooler
 # Import the reading of temp
 from TempSensor import TempSensor
 # Import the OLED screen
@@ -15,10 +15,10 @@ import time
 
 tempsens = TempSensor()
 oledScreen = OLEDScreen()
-pumpAlgae = PumpControl(15,33)
+pumpAlgae = PumpBB(15,33)
 pumpCool = PumpPWM(27,12)
 # Initialize the Peltier and the Fan controller
-cooler = CoolerControl()
+cooler = Cooler()
 #PID controller section
 PID = PIDControl(tempsens.read_temp())
 #Set the PID controller parameters

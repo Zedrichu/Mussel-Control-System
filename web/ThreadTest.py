@@ -22,7 +22,7 @@ tempsens = TempSensor()
 systemProperties['temperature'] = tempsens.read_temp()
 
 # Initialize the board network connectivity with given credentials
-boardNet = Network('Pixel 5', 'lenovoi7')
+boardNet = Network('Pixel 5', 'letmeinnow')
 
 def feed_callback(topic, msg):
     global systemProperties 

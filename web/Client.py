@@ -7,13 +7,13 @@ def makeFeedname(feed):
     return bytes('{:s}/feeds/{:s}'.format(AIO_USERNAME, feed), 'utf-8')
     
 
-class Client (MQTTClient):
+class Client(MQTTClient):
     def __init__(self, server, 
                 user, password):
         # create a random MQTT clientID 
         random_num = int.from_bytes(os.urandom(3), 'little')
         mqtt_client_id = bytes('client_'+str(random_num), 'utf-8')
-        super(MQTTClient, self).__init__(mqtt_client_id,server = server, user = user, password = password)
+        super(MQTTClient, self).__init__(mqtt_client_id,server= server, user= user, password= password)
         
     # Publish Temperature to Adafruit IO using MQTT
     def publishTemp(self, props):

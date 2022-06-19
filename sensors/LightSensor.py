@@ -34,7 +34,6 @@ class LightSensor:
         # Read triplicates of voltages/intensity
         for i in range(100):
             intensi.append(self.adc.read())
-            time.sleep(0.01)
         # Turn off the LED until next measurement
         self.led.value(0)
         return sum(intensi)/100

@@ -27,7 +27,7 @@ props = {
 }
 
 #write Properties to the log file in string format
-def OfflineLog(props):
+def Logger(props):
     #Create the log file
     if (props['offlineAgain']): 
         with open('OfflineLogT.txt', 'a') as logFile:
@@ -44,7 +44,7 @@ def OfflineLog(props):
             logFile.close()
 
 for i in range(2):
-    OfflineLog(props)
+    Logger(props)
 
 #Read the txt log and generate complete JSON
 def jsonFile():
@@ -70,13 +70,13 @@ jsonData, pubAmount = jsonFile()
 
 
 #LogFile creation to run while system is offline
-def OfflineLog(jsonData):
+def Logger(jsonData):
     with open('OfflineLog.json', 'w') as logFile:
         logFile.write(jsonData)
         logFile.close()
 
 for i in range(pubAmount):
-    OfflineLog()
+    Logger()
 
 
 

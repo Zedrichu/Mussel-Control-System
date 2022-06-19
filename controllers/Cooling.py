@@ -1,6 +1,6 @@
 from machine import Pin
 
-class CoolerControl:
+class Cooler:
     def __init__(self) -> None:
         self.peltier = Pin(25, Pin.OUT)
         self.fan = Pin(26, Pin.OUT)

@@ -31,7 +31,7 @@ class TaskScheduler:
 
     # Method to run the task scheduler continuously
     def run(self):
-        if self.clockTime > self.divs:
+        if self.clockTime >= self.divs:
             self.clockTime = 1
         else:
             self.clockTime += 1
@@ -41,7 +41,7 @@ class TaskScheduler:
                 print("Running task: " + self.taskDict[freq].name)
                 print("Task Dictionary: " + str(self.taskDict))
                 self.taskDict[freq].exec()
-        print("Tick "+str(self.clockTime))
+        #print("Tick \n"+str(self.clockTime))
         utime.sleep(self.tick)
 
     
@@ -57,19 +57,21 @@ class Task:
         self.func = func
 
     def exec(self):
-        #utime start
+        # Stopwatch start
         start = utime.ticks_us()
         self.func()
+        # Stopwatch end
         end = utime.ticks_us()
+        #Duration microseconds
         diff = utime.ticks_diff(end, start)
-        print("Difference: " + str(diff))
-        #Diff microseconds
-        print(self.name + " executed!")
+        print("Duration: " + str(diff))
 
     def __str__(self):
         return self.name
     
 
+
+# __________Small Example____________
 # def start():
 #     x = 2.5
 #     print("one task")
@@ -79,8 +81,6 @@ class Task:
 
 # def add50():
 #     print("50")
-
-# __________Small Example____________
 #t1 = Task("t1", 2, start)
 #t2 = Task("t2", 3, add23)
 #t3 = Task("t3", 5, add50)
