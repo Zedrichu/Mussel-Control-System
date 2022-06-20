@@ -26,7 +26,15 @@ class Client(MQTTClient):
         con = props['concentration']
         if not con == None:
             self.publish(makeFeedname('algae.algae-concentration'),bytes(str(con),'utf-8'),qos=0)
-            
+
+    # Publish Stream of Information to Adafruit IO        
     def publishStream(self, status):
         self.publish(makeFeedname('stream'),bytes(status,'utf-8'),qos=0)
+
+    # Publish CoolingPump speed
+    def publishSpeed(self,props):
+        speed = props['pumpSpeed']
+        self.publish(makeFeedname('cooling-pump'),bytes(str(speed),'utf-8'),qos=0)
+
+    
     

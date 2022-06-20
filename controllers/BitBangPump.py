@@ -40,9 +40,9 @@ class PumpBB:
     def cycle(self, steps):
         for i in range(steps):
             self.stepOn()
-            utime.sleep_us(50)
+            utime.sleep_us(10)
             self.stepOn()
-            utime.sleep_us(50)
+            utime.sleep_us(10)
     
     #Perform step depending on sleep interval
     def stepSleep(self,sleep):

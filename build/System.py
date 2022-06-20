@@ -1,16 +1,16 @@
 import network, time, utime
 import os, gc, sys
-from sensors.TempSensor import TempSensor
-from web.Client import Client
-from web.Network import Network
+from TempSensor import TempSensor
+from Client import Client
+from Network import Network
 from MultiThread import Task, TaskScheduler
-from sensors.LightSensor import LightSensor
-from controllers.BitBangPump import PumpBB
-from controllers.PWMPump import PumpPWM
-from controllers.Cooling import Cooler
-from sensors.OLED import OLEDScreen
-from controllers.PIDController import PIDControl
-from web.Logger import Logger
+from LightSensor import LightSensor
+from BitBangPump import PumpBB
+from PWMPump import PumpPWM
+from Cooling import Cooler
+from OLED import OLEDScreen
+from PIDController import PIDControl
+#from Logger import Logger
 
 # WiFi connection credentials
 WIFI_SSID = 'Pixel 5'
@@ -21,7 +21,13 @@ sysprops = {
     "systemActive": True,
     "aioConnection": False,
     "wifiConnection": False,
+    "lastConCheck" : None,
     "logsRequired" : True,
+    "logs4Publish" : False,
+    "lastPublish" : None,
+    "lastSubscription" : None,
+    "lastFeeding" : None,
+    "amountFeed" : None,
     "tempSensing": {
         "sensorActive" : True,
         "temperature" : 0,
@@ -36,6 +42,7 @@ sysprops = {
     "controlPID": {
         "active" : True,
         "lastUpdate" : None,
+        "pumpSpeed": 0,
         "parameters" : (8.5, 2, 0.2)
     }
 }
@@ -72,18 +79,20 @@ def tryConnectAIO() -> None:
         return None
     return client
 
-# Definition of sensors and pump controllers
-tempSens = TempSensor()
-lightSens = LightSensor()
-pumpAlgae = PumpBB()
-pumpCool = PumpPWM()
-cooler = Cooler()
-oledScreen = OLEDScreen()
-PID = PIDControl(tempSens.read_temp())
 
+cooler = Cooler()
 # Start with high cooling power and fan running
 cooler.peltHighPower()
 cooler.fanOn()
+
+# Definition of sensors and pump controllers
+pumpAlgae = PumpBB()
+pumpCool = PumpPWM()
+oledScreen = OLEDScreen()
+lightSens = LightSensor()
+tempSens = TempSensor()
+temp = tempSens.read_temp()
+PID = PIDControl(temp)
 
 # Set PID controller parameters by default
 P, I, D = sysprops['controlPID']['parameters']
@@ -108,27 +117,34 @@ def updateTemp():
 # Function to adjust the speed of the pump 
 #according to the actuator
 def adjustSpeed(ut):
+    global sysprops
     if ut <= 2:
         cooler.peltLowPower()
         pumpCool.speed(0)
-    
+        sysprops['controlPID']['pumpSpeed'] = 0
     elif ut <= 20:
         cooler.peltLowPower()
-        pumpCool.speed(int(600*ut))
-        
+        speed = int(600*ut)
+        pumpCool.speed(speed)
+        sysprops['controlPID']['pumpSpeed'] = speed
     else:
         cooler.peltHighPower()
         current = pumpCool.pwm.freq()
         for i in range((12500-current)//1000):
             time.sleep(0.05)
             pumpCool.speed(int(current+i*1000))
+        sysprops['controlPID']['pumpSpeed'] = 12500
 
-# Function that handles the update of the PID controller every 10 seconds
+# Function that handles the update of the PID controller every 60 seconds
 def updatePID():
     global sysprops
     if sysprops['controlPID']['active']:
         now = utime.ticks_ms()
-        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 10*1000:
+        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 60*1000:
+            P, I, D = sysprops['controlPID']['parameters']
+            PID.setProportional(8.5)
+            PID.setIntegral(2)
+            PID.setDerivative(0.2)
             actuatorValue = PID.update(sysprops['tempSensing']['temperature'])
             print("Actuator:" + str(actuatorValue))
             print("PID Values:" + PID.overview)
@@ -142,42 +158,88 @@ def updateConc():
     if sysprops['odSensing']['sensorActive']:
         now = utime.ticks_ms()
         if not sysprops['odSensing']['lastMeasure'] or utime.ticks_diff(now, sysprops['odSensing']['lastMeasure']) >= 60*1000:
+            # Pump water through the entire pump
+            pumpAlgae.cycle(49700)
+
+            # Take concentration measurement 
             intens = lightSens.readIntensity()
             od = lightSens.computeOD(intens)
             conc = lightSens.computeConc(od)
+
+            # Return the water into the algae container
+            pumpAlgae.switchDir()
+            pumpAlgae.cycle(49700)
+            pumpAlgae.switchDir()
+
             sysprops['odSensing']['opticalDensity'] = od
             sysprops['odSensing']['concentration'] = conc
             sysprops['odSensing']['lastMeasure'] = now
+            print("Intensity: "+str(intens))
+            print("OD: {} Concentration: {} cells/mL".format(od, conc))
             print("Updated measurement of optical density and algae concentration!\n")
 
 # Increase tick of main to check more rarely functions calls
-main = TaskScheduler(5, 2)
-offline = TaskScheduler(3, 6)
-online = TaskScheduler(3, 10)
+main = TaskScheduler(1, 2)
+offline = TaskScheduler(1, 6)
+online = TaskScheduler(1, 8)
 
-def updatePID():
-    print("Updated PID!")
-
-def updateConc():
-    print("Updated Concentration!")
-
-def logger():
+# Function that updates OLED
+def updateOLED():
     global sysprops
-    if sysprops['logsRequired']:
-        print("Information logged in file on board.")
+    oledScreen.setTemp(sysprops['tempSensing']['temperature'])
+    oledScreen.setCon(sysprops['odSensing']['concentration'])
+    oledScreen.setOnline(sysprops['aioConnection'])
+    oledScreen.printOverview()
 
-def recover():
-    print("Preparation for feeding is done.")
+# Function to write system properties in file while offline
+def logOffline():
+    global sysprops
+    if not sysprops['aioConnection'] or not boardNet.isConnected():
+        # Appends to log file if second run
+        now = utime.ticks_ms()
+        if not sysprops["lastPublish"] or utime.ticks_diff(now,sysprops['lastPublish']) >= 1000*30: 
+            if sysprops['logsRequired'] and not sysprops['logs4Publish']:
+                print("Inside first if LogOffline")
+                file = open("log.txt",'w')
+                #log the system properties
+                file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
+                file.write("concentration" + ","+ str(sysprops['odSensing']['concentration']) + "\n")
+                file.close()
+            elif sysprops['logsRequired'] and sysprops['logs4Publish']:
+                file = open("log.txt",'a')
+                #log the system properties
+                file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
+                file.write("concentration" + "," + str(sysprops['odSensing']['concentration']) + "\n")
+                file.close()
+            sysprops['logs4Publish'] = True
+            sysprops['lastPublish'] = now
+            print("Offline logs are stored in file.")
+    
 
 def feeder():
-    print("Mussels have been fed successfully!")
+    global sysprops
+    now = utime.ticks_ms()
+    if not sysprops['lastFeeding'] or utime.ticks_diff(now, sysprops['lastFeeding']) >= 16.67*60*1000:
+        CELLS_ML = sysprops['odSensing']['concentration']
+        CELLS_NED = 1.667*10**6
+        ml = CELLS_NED/CELLS_ML
+        steps = round(ml * 4097.5)
+        # Recovery before feeding
+        pumpAlgae.cycle(steps)
+        pumpAlgae.switchDir()
+
+        # Feed the mussels
+        pumpAlgae.cycle(steps)
+        sysprops['lastFeeding'] = now
+        print("Mussels have been fed successfully!")
 
 offline.addTask(1, Task("Temperature Measurement", updateTemp))
 offline.addTask(2, Task("PID Update on Cooling", updatePID))
 offline.addTask(3, Task("Concentration Measurement", updateConc))
-offline.addTask(4, Task("Logging Information", logger))
-offline.addTask(5, Task("Prepare for feeding", recover))
+offline.addTask(4, Task("Logging Information", logOffline))
+offline.addTask(5, Task("Update OLED Information", updateOLED))
 offline.addTask(6, Task("Feed Mussels with Algae", feeder))
+
 
 def offlineMode():
     global sysprops
@@ -185,23 +247,80 @@ def offlineMode():
         print('Running offline mode with logs on board...')
         offline.run()
 
-def updateFeedLog():
-    if sysprops['logsRequired'] and sysprops['aioConnection']:
-        # Send all logs to feed on server
+def logOnline():
+    global sysprops
+    if sysprops['wifiConnection'] and sysprops['logs4Publish']:
+        # Read the log file
+        f = open('log.txt','r')
+        
+        # Send all logs to Adafruit IO server
+        for line in f.readlines():
+            key, value = line.split(',')
+            diction = {key : value}
+            if key == 'temperature':
+                print("Publishing temperature...")
+                client.publishTemp(diction)
+            elif key == 'concentration':
+                client.publishCon(diction)
+        sysprops['logs4Publish'] = False
         print("Updating feeds with offline information in logs...")
 
+
 def publisher():
+    global client
     print("Publishing information on AIO server...")
 
+    if sysprops['aioConnection'] and boardNet.isConnected():        
+        now = utime.ticks_ms()
+        if not sysprops["lastPublish"] or utime.ticks_diff(now,sysprops['lastPublish']) >= 1000*10:    
+            #Publish to graphs
+            client.publishTemp(sysprops['tempSensing'])
+            client.publishCon(sysprops['odSensing'])
+            client.publishSpeed(sysprops['controlPID'])
+            
+            temp = sysprops['tempSensing']['temperature']
+
+            #Stream feed times
+            if (utime.ticks_diff(now,sysprops['lastFeeding'])>(1000*60*15)):
+                status = "Mussels have been fed " + str(sysprops['amountFeed'] + "mL Algae")
+                client.publishStream(status) 
+            
+
+
+            sysprops['lastPublish'] = now
+
+
+# Feeds to be subscribed to from Adafruit IO
+system_feedname = bytes('{:s}/feeds/{:s}'.format(AIO_USER, b'System'), 'utf-8')
+ppar_feedname = bytes('{:s}/feeds/{:s}'.format(AIO_USER, b'p-value'), 'utf-8')
+ipar_feedname = bytes('{:s}/feeds/{:s}'.format(AIO_USER, b'i-value'), 'utf-8')
+dpar_feedname = bytes('{:s}/feeds/{:s}'.format(AIO_USER, b'd-value'), 'utf-8')
+
 def subscriber():
+    global client
     print("Subscribed to feeds and checking incoming messages...")
+    if sysprops['aioConnection'] and boardNet.isConnected():
+        now = utime.ticks_ms()
+        if utime.ticks_diff(now, sysprops['lastSubscription']) >= 1000:
+            client.check_msg()
+            sysprops['lastSubscription'] = now
+    elif boardNet.isConnected() and not sysprops['wifiConnection']:
+        client.subscribe(system_feedname)
+        client.subscribe(ppar_feedname)
+        client.subscribe(ipar_feedname)
+        client.subscribe(dpar_feedname)
+    else:
+        sysprops['wifiConnection'] = boardNet.isConnected()    
 
-
-online.addTask(1, Task("Temperature Measurement", updateTemp))
-online.addTask(2, Task("PID Update on Cooling", updatePID))
-online.addTask(3, Task("Concentration Measurement", updateConc))
-online.addTask(5, Task("Prepare for feeding", recover))
-online.addTask(6, Task("Feed Mussels with Algae", feeder))
+# Add all the tasks to the online scheduler
+online.addTask(1, Task("Subscribe Remote Controls", subscriber))
+online.addTask(2, Task("Temperature Measurement", updateTemp))
+online.addTask(3, Task("PID Update on Cooling", updatePID))
+online.addTask(4, Task("Concentration Measurement", updateConc))
+online.addTask(5, Task("Publish System Properties", publisher))
+online.addTask(6, Task("Update OLED Information", updateOLED))
+online.addTask(7, Task("Feed Mussels with Algae", feeder))
+online.addTask(8, Task("Publish Offline Logs", logOnline))
 
 def onlineMode():
     global sysprops
@@ -213,18 +332,49 @@ def onlineMode():
 main.addTask(1, Task("Online Runner", onlineMode))
 main.addTask(2, Task("Offline Runner", offlineMode))
 
+# Callback for receiving data from feed
+def feed_callback(topic, msg):
+    global sysprops
+    print('Subscribed to feed:\n Received Data -->  Topic = {}, Msg = {}\n'.format(topic, msg))
+    if topic == b'Zedrichu/feeds/System':
+        if msg == b'OFF':
+            sysprops['systemActive'] = False
+        else:
+            sysprops['systemActive'] = True
+    elif topic == b'Zedrichu/feeds/p-value':
+         sysprops['controlPID']['parameters'][0] = int(msg)
+    elif topic == b'Zedrichu/feeds/i-value':
+         sysprops['controlPID']['parameters'][1] = int(msg)    
+    elif topic == b'Zedrichu/feeds/d-value':
+         sysprops['controlPID']['parameters'][2] = int(msg)
+
+
+
 while True:
 
     # If there is no WiFi connection, try to obtain it
     if not sysprops['wifiConnection']:
-        tryConnectWIFI()
-        sysprops['aioConnection'] = False
+        now = utime.ticks_ms()
+        if not sysprops['lastConCheck'] or utime.ticks_diff(now, sysprops['lastConCheck']) >= 60*1000:
+            tryConnectWIFI()
+            sysprops['aioConnection'] = False
 
     # If WiFi is connected and AdIO is not, try to connect to server   
     if sysprops['wifiConnection'] and not sysprops['aioConnection']:
         client = tryConnectAIO()
     
-    sysprops['wifiConnection'] = boardNet.isConnected()
+    # Prepare the client for subscription
+    if sysprops['aioConnection']:
+        client.set_callback(feed_callback)
+        client.subscribe(system_feedname)
+        client.subscribe(ppar_feedname)
+        client.subscribe(ipar_feedname)
+        client.subscribe(dpar_feedname)
+
+    
     
     if sysprops['systemActive']:
         main.run()
+
+    sysprops['wifiConnection'] = boardNet.isConnected()
+    sysprops['logsRequired'] = not boardNet.isConnected()

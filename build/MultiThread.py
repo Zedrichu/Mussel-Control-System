@@ -39,7 +39,7 @@ class TaskScheduler:
         for freq in self.taskDict.keys():    
             if self.clockTime % freq == 0:
                 print("Running task: " + self.taskDict[freq].name)
-                print("Task Dictionary: " + str(self.taskDict))
+                #print("Task Dictionary: " + str(self.taskDict))
                 self.taskDict[freq].exec()
         #print("Tick \n"+str(self.clockTime))
         utime.sleep(self.tick)

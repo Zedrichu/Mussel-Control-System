@@ -61,19 +61,3 @@ class TempSensor:
         print('Temperature: {}°C'.format(steinhart))
         return steinhart
     
-# Method to perform continuosly temperature measurements
-def loop_temp():
-    print("I'm alive!\n")
-    utime.sleep_ms(2000)
-
-    temp_sens = TempSensor()
-
-    sample_last_ms = 0
-    SAMPLE_INTERVAL = 1000
-
-    while (True):
-        if utime.ticks_diff(utime.ticks_ms(), sample_last_ms) >= SAMPLE_INTERVAL:
-            temp = temp_sens.read_temp()
-            sample_last_ms = utime.ticks_ms()
-
-tempsens = TempSensor()

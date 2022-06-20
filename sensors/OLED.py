@@ -28,14 +28,18 @@ class OLEDScreen:
     def setTemp(self, temp):
         self.lines[1] = "Temperature:" + str(temp)
     
-    #Last OD 
+    #Last Con
     # Time 1600
-    def setOD(self, od):
-        self.lines[2] = "Last OD:" + str(od)
+    def setCon(self, con):
+        self.lines[2] = "Last Con:" + str(round(con))
 
     # Time 1600
-    def setMessage(self, msg):
-        self.lines[3] = msg
+    def setOnline(self, msg):
+        if msg == True:
+            status = "Online"
+        else:
+            status = "Offline"
+        self.lines[3] = "System:" + status
 
     # Time 1070000
     def printOverview(self):
@@ -43,6 +47,6 @@ class OLEDScreen:
         self.oled.text(self.lines[0], 0, 8)
         self.oled.text(self.lines[1], 0, 16)
         self.oled.text(self.lines[2], 0, 24)
-        self.oled.text(self.lines[2], 0, 32)
+        self.oled.text(self.lines[3], 0, 32)
         self.oled.show()
 
