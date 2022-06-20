@@ -202,7 +202,7 @@ def logOffline():
     if not sysprops['aioConnection'] or not boardNet.isConnected():
         # Appends to log file if second run
         now = utime.ticks_ms()
-        if not sysprops["lastPublish"] or utime.ticks_diff(now,sysprops['lastPublish']) >= 1000*30: 
+        if not sysprops["lastPublish"] or utime.ticks_diff(now,sysprops['lastPublish']) >= 1000*300: 
             if sysprops['logsRequired'] and not sysprops['logs4Publish']:
                 print("Inside first if LogOffline")
                 file = open("log.txt",'w')
@@ -302,6 +302,7 @@ def publisher():
 
             #Stream feed times
             client.publishStream(sysprops['message']) 
+            sysprops['message'] = ""
             
             sysprops['lastPublish'] = now
 
