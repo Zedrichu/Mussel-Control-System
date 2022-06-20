@@ -1,4 +1,4 @@
-import network, time, utime
+import network, time, utime, math
 import os, gc, sys
 from TempSensor import TempSensor
 from Client import Client
@@ -28,6 +28,9 @@ sysprops = {
     "lastSubscription" : None,
     "lastFeeding" : None,
     "amountFeed" : None,
+    "amountLast" : None,
+    "feedCounter" : 0,
+    "message" : None,
     "tempSensing": {
         "sensorActive" : True,
         "temperature" : 0,
@@ -113,6 +116,7 @@ def updateTemp():
             sysprops['tempSensing']['temperature'] = temp
             sysprops['tempSensing']['lastMeasure'] = now
             print("Updated temperature measurement!\n")
+            #sysprops['message'] = "Updated Temperature!"
 
 # Function to adjust the speed of the pump 
 #according to the actuator
@@ -151,6 +155,7 @@ def updatePID():
             adjustSpeed(actuatorValue)
             sysprops['controlPID']['lastUpdate'] = now
             print("Updated actuator on PID controlled cooling!\n")
+            sysprops['message'] = "Updated actuator on PID controlled cooling!"
 
 # Function to update the concentration of algae based on OD every minute
 def updateConc():
@@ -202,12 +207,16 @@ def logOffline():
                 print("Inside first if LogOffline")
                 file = open("log.txt",'w')
                 #log the system properties
+                if (sysprops['amountLast']!=sysprops['amountFeed']):
+                    file.write("feed amount" + "," + str(sysprops['amountFeed']) + "\n")
                 file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
                 file.write("concentration" + ","+ str(sysprops['odSensing']['concentration']) + "\n")
                 file.close()
             elif sysprops['logsRequired'] and sysprops['logs4Publish']:
                 file = open("log.txt",'a')
                 #log the system properties
+                if (sysprops['amountLast']!=sysprops['amountFeed']):
+                    file.write("feed amount" + "," + str(sysprops['amountFeed']) + "\n")
                 file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
                 file.write("concentration" + "," + str(sysprops['odSensing']['concentration']) + "\n")
                 file.close()
@@ -220,10 +229,13 @@ def feeder():
     global sysprops
     now = utime.ticks_ms()
     if not sysprops['lastFeeding'] or utime.ticks_diff(now, sysprops['lastFeeding']) >= 16.67*60*1000:
-        CELLS_ML = sysprops['odSensing']['concentration']
+        NO = 175000 #cells/mL
+        # CELLS_ML = sysprops['odSensing']['concentration']
+        CELLS_ML = NO*math.exp(sysprops['feedCounter'] * 0.00789)
         CELLS_NED = 1.667*10**6
-        ml = CELLS_NED/CELLS_ML
-        steps = round(ml * 4097.5)
+        ML = CELLS_NED/CELLS_ML
+        steps = round(ML * 4097.5)
+
         # Recovery before feeding
         pumpAlgae.cycle(steps)
         pumpAlgae.switchDir()
@@ -231,7 +243,10 @@ def feeder():
         # Feed the mussels
         pumpAlgae.cycle(steps)
         sysprops['lastFeeding'] = now
+        sysprops['amountFeed'] = ML
+        sysprops['feedCounter'] += 1
         print("Mussels have been fed successfully!")
+        sysprops['message'] = "Mussels have been fed successfully with {} mL".format(round(sysprops['amountFeed'],2))
 
 offline.addTask(1, Task("Temperature Measurement", updateTemp))
 offline.addTask(2, Task("PID Update on Cooling", updatePID))
@@ -262,7 +277,12 @@ def logOnline():
                 client.publishTemp(diction)
             elif key == 'concentration':
                 client.publishCon(diction)
+            elif key == 'feed amount':
+                status = "Mussel have been feed with: " + str(value)
+                client.publishStream(status)
+                
         sysprops['logs4Publish'] = False
+        sysprops['message'] = "Offline logs have been sent to server!"
         print("Updating feeds with offline information in logs...")
 
 
@@ -281,12 +301,8 @@ def publisher():
             temp = sysprops['tempSensing']['temperature']
 
             #Stream feed times
-            if (utime.ticks_diff(now,sysprops['lastFeeding'])>(1000*60*15)):
-                status = "Mussels have been fed " + str(sysprops['amountFeed'] + "mL Algae")
-                client.publishStream(status) 
+            client.publishStream(sysprops['message']) 
             
-
-
             sysprops['lastPublish'] = now
 
 
@@ -342,13 +358,12 @@ def feed_callback(topic, msg):
         else:
             sysprops['systemActive'] = True
     elif topic == b'Zedrichu/feeds/p-value':
-         sysprops['controlPID']['parameters'][0] = int(msg)
+        sysprops['controlPID']['parameters'][0] = int(msg)
     elif topic == b'Zedrichu/feeds/i-value':
-         sysprops['controlPID']['parameters'][1] = int(msg)    
+        sysprops['controlPID']['parameters'][1] = int(msg)    
     elif topic == b'Zedrichu/feeds/d-value':
-         sysprops['controlPID']['parameters'][2] = int(msg)
-
-
+        sysprops['controlPID']['parameters'][2] = int(msg)
+        
 
 while True:
 

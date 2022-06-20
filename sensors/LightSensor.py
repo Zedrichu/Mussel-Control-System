@@ -24,7 +24,7 @@ class LightSensor:
         # Pin component for LED associated in in-line measurement block
         self.led = Pin(21, Pin.OUT)
         self.led.value(1)
-        self.ref = 3790
+        self.ref = 899
 
     # Time ticks 101700 micro seconds
     def readIntensity(self):
