@@ -1,0 +1,11 @@
+temperature,17.69
+concentration,366068.7
+feed amount,9.525714
+temperature,17.57
+concentration,-280747.7
+feed amount,9.525714
+temperature,17.41
+concentration,-272369.5
+feed amount,9.525714
+temperature,17.77
+concentration,-279273.4

@@ -23,7 +23,8 @@ sysprops = {
     "wifiConnection": False,
     "lastConCheck" : None,
     "logsRequired" : True,
-    "logs4Publish" : False,
+    "lastLogs" : None,
+    "logs4Publish" : True,
     "lastPublish" : None,
     "lastSubscription" : None,
     "lastFeeding" : None,
@@ -116,7 +117,8 @@ def updateTemp():
             sysprops['tempSensing']['temperature'] = temp
             sysprops['tempSensing']['lastMeasure'] = now
             print("Updated temperature measurement!\n")
-            #sysprops['message'] = "Updated Temperature!"
+            if temp > 19.5:
+                sysprops['message'] = "Uhh, it's getting hot in here!"
 
 # Function to adjust the speed of the pump 
 #according to the actuator
@@ -146,9 +148,9 @@ def updatePID():
         now = utime.ticks_ms()
         if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 60*1000:
             P, I, D = sysprops['controlPID']['parameters']
-            PID.setProportional(8.5)
-            PID.setIntegral(2)
-            PID.setDerivative(0.2)
+            PID.setProportional(P)
+            PID.setIntegral(I)
+            PID.setDerivative(D)
             actuatorValue = PID.update(sysprops['tempSensing']['temperature'])
             print("Actuator:" + str(actuatorValue))
             print("PID Values:" + PID.overview)
@@ -200,28 +202,27 @@ def updateOLED():
 def logOffline():
     global sysprops
     if not sysprops['aioConnection'] or not boardNet.isConnected():
-        # Appends to log file if second run
+        # Appends to log file if file already created
         now = utime.ticks_ms()
-        if not sysprops["lastPublish"] or utime.ticks_diff(now,sysprops['lastPublish']) >= 1000*300: 
+        if not sysprops["lastLogs"] or utime.ticks_diff(now,sysprops['lastLogs']) >= 1000*300: 
             if sysprops['logsRequired'] and not sysprops['logs4Publish']:
-                print("Inside first if LogOffline")
                 file = open("log.txt",'w')
-                #log the system properties
-                if (sysprops['amountLast']!=sysprops['amountFeed']):
+                # Log the system properties
+                if (sysprops['amountLast'] != sysprops['amountFeed']):
                     file.write("feed amount" + "," + str(sysprops['amountFeed']) + "\n")
                 file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
                 file.write("concentration" + ","+ str(sysprops['odSensing']['concentration']) + "\n")
                 file.close()
             elif sysprops['logsRequired'] and sysprops['logs4Publish']:
                 file = open("log.txt",'a')
-                #log the system properties
-                if (sysprops['amountLast']!=sysprops['amountFeed']):
+                # Log the system properties
+                if (sysprops['amountLast'] != sysprops['amountFeed']):
                     file.write("feed amount" + "," + str(sysprops['amountFeed']) + "\n")
                 file.write("temperature" + "," + str(sysprops['tempSensing']['temperature']) + "\n")
                 file.write("concentration" + "," + str(sysprops['odSensing']['concentration']) + "\n")
                 file.close()
             sysprops['logs4Publish'] = True
-            sysprops['lastPublish'] = now
+            sysprops['lastLogs'] = now
             print("Offline logs are stored in file.")
     
 
@@ -246,7 +247,7 @@ def feeder():
         sysprops['amountFeed'] = ML
         sysprops['feedCounter'] += 1
         print("Mussels have been fed successfully!")
-        sysprops['message'] = "Mussels have been fed successfully with {} mL".format(round(sysprops['amountFeed'],2))
+        sysprops['message'] = "Yummy. Mussels have been fed successfully with {} mL".format(round(sysprops['amountFeed'],2))
 
 offline.addTask(1, Task("Temperature Measurement", updateTemp))
 offline.addTask(2, Task("PID Update on Cooling", updatePID))
@@ -299,11 +300,15 @@ def publisher():
             client.publishSpeed(sysprops['controlPID'])
             
             temp = sysprops['tempSensing']['temperature']
+            if temp > 19:
+                sysprops['message'] = "Uhh, it's getting hot in here!🔥"
 
-            #Stream feed times
-            client.publishStream(sysprops['message']) 
-            sysprops['message'] = ""
-            
+            #Stream messages
+            if not sysprops['message'] == "":
+                client.publishStream(sysprops['message']) 
+                sysprops['message'] = ""
+                
+
             sysprops['lastPublish'] = now
 
 
@@ -359,11 +364,17 @@ def feed_callback(topic, msg):
         else:
             sysprops['systemActive'] = True
     elif topic == b'Zedrichu/feeds/p-value':
-        sysprops['controlPID']['parameters'][0] = int(msg)
+        prev = sysprops['controlPID']['parameters']
+        upd = (float(msg), prev[1], prev[2]) 
+        sysprops['controlPID']['parameters'] = upd
     elif topic == b'Zedrichu/feeds/i-value':
-        sysprops['controlPID']['parameters'][1] = int(msg)    
+        prev = sysprops['controlPID']['parameters']
+        upd = (prev[0], float(msg), prev[2]) 
+        sysprops['controlPID']['parameters'] = upd    
     elif topic == b'Zedrichu/feeds/d-value':
-        sysprops['controlPID']['parameters'][2] = int(msg)
+        prev = sysprops['controlPID']['parameters']
+        upd = (prev[0], prev[1], float(msg)) 
+        sysprops['controlPID']['parameters'] = upd
         
 
 while True:
