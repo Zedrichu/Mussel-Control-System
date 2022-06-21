@@ -187,7 +187,7 @@ def updateConc():
 
 # Increase tick of main to check more rarely functions calls
 main = TaskScheduler(1, 2)
-offline = TaskScheduler(1, 6)
+offline = TaskScheduler(1, 7) #Changed for OD LOG
 online = TaskScheduler(1, 8)
 
 # Function that updates OLED
@@ -224,6 +224,27 @@ def logOffline():
             sysprops['logs4Publish'] = True
             sysprops['lastLogs'] = now
             print("Offline logs are stored in file.")
+
+
+
+# LogOD Offline
+def LogOD():
+    global sysprops
+    print("Logging OD...")
+    # Appends to log file if file already created
+    if not sysprops['aioConnection'] or not boardNet.isConnected():
+        # Appends to log file if file already created
+        now = utime.ticks_ms()
+        if not sysprops["lastLogs"] or utime.ticks_diff(now,sysprops['lastLogs']) >= 1000*300: 
+            f = open("LogOD", 'a')
+            f.write(str(sysprops['odSensing']['opticalDensity']) + "\n")
+            f.close()
+        
+        
+
+
+
+
     
 
 def feeder():
@@ -255,6 +276,7 @@ offline.addTask(3, Task("Concentration Measurement", updateConc))
 offline.addTask(4, Task("Logging Information", logOffline))
 offline.addTask(5, Task("Update OLED Information", updateOLED))
 offline.addTask(6, Task("Feed Mussels with Algae", feeder))
+offline.addTask(7, Task("Log OD", LogOD))
 
 
 def offlineMode():
@@ -279,7 +301,7 @@ def logOnline():
             elif key == 'concentration':
                 client.publishCon(diction)
             elif key == 'feed amount':
-                status = "Mussel have been feed with: " + str(value)
+                status = "Yummy. Mussels have been feed with: " + str(value) + " mL"
                 client.publishStream(status)
                 
         sysprops['logs4Publish'] = False
