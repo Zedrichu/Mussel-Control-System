@@ -26,7 +26,9 @@ sysprops = {
     "lastLogs" : None,
     "logs4Publish" : True,
     "lastPublish" : None,
+    "lastPublishInfo" : None,
     "lastSubscription" : None,
+    "lastLogOD" : None,
     "lastFeeding" : None,
     "amountFeed" : None,
     "amountLast" : None,
@@ -228,23 +230,20 @@ def logOffline():
 
 
 # LogOD Offline
-def LogOD():
+def logOD():
     global sysprops
-    print("Logging OD...")
+    print("Logging OD func")
     # Appends to log file if file already created
     if not sysprops['aioConnection'] or not boardNet.isConnected():
         # Appends to log file if file already created
         now = utime.ticks_ms()
-        if not sysprops["lastLogs"] or utime.ticks_diff(now,sysprops['lastLogs']) >= 1000*300: 
-            f = open("LogOD", 'a')
+        if not sysprops["lastLogOD"] or utime.ticks_diff(now,sysprops['lastLogOD']) >= 1000*30: 
+            f = open("logOD.txt", 'a')
+            print("Logging OD..." + str(sysprops['odSensing']['opticalDensity']))
             f.write(str(sysprops['odSensing']['opticalDensity']) + "\n")
             f.close()
+            sysprops['lastLogOD'] = now
         
-        
-
-
-
-
     
 
 def feeder():
@@ -276,7 +275,7 @@ offline.addTask(3, Task("Concentration Measurement", updateConc))
 offline.addTask(4, Task("Logging Information", logOffline))
 offline.addTask(5, Task("Update OLED Information", updateOLED))
 offline.addTask(6, Task("Feed Mussels with Algae", feeder))
-offline.addTask(7, Task("Log OD", LogOD))
+offline.addTask(7, Task("Log OD", logOD))
 
 
 def offlineMode():
@@ -319,6 +318,10 @@ def publisher():
             #Publish to graphs
             client.publishTemp(sysprops['tempSensing'])
             client.publishCon(sysprops['odSensing'])
+            sysprops['lastPublish'] = now
+            
+            
+        if not sysprops["lastPublishInfo"] or utime.ticks_diff(now,sysprops['lastPublishInfo']) >= 1000*20:
             client.publishSpeed(sysprops['controlPID'])
             
             temp = sysprops['tempSensing']['temperature']
@@ -329,10 +332,7 @@ def publisher():
             if not sysprops['message'] == "":
                 client.publishStream(sysprops['message']) 
                 sysprops['message'] = ""
-                
-
-            sysprops['lastPublish'] = now
-
+            sysprops['lastPublishInfo'] = now
 
 # Feeds to be subscribed to from Adafruit IO
 system_feedname = bytes('{:s}/feeds/{:s}'.format(AIO_USER, b'System'), 'utf-8')
