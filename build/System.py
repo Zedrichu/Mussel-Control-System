@@ -364,7 +364,7 @@ online.addTask(4, Task("Concentration Measurement", updateConc))
 online.addTask(5, Task("Publish System Properties", publisher))
 online.addTask(6, Task("Update OLED Information", updateOLED))
 online.addTask(7, Task("Feed Mussels with Algae", feeder))
-online.addTask(8, Task("Publish Offline Logs", logOnline))
+#online.addTask(8, Task("Publish Offline Logs", logOnline))
 
 def onlineMode():
     global sysprops
