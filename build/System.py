@@ -143,12 +143,12 @@ def adjustSpeed(ut):
             pumpCool.speed(int(current+i*1000))
         sysprops['controlPID']['pumpSpeed'] = 12500
 
-# Function that handles the update of the PID controller every 60 seconds
+# Function that handles the update of the PID controller every 10 seconds
 def updatePID():
     global sysprops
     if sysprops['controlPID']['active']:
         now = utime.ticks_ms()
-        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 60*1000:
+        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 10*1000:
             P, I, D = sysprops['controlPID']['parameters']
             PID.setProportional(P)
             PID.setIntegral(I)
@@ -256,9 +256,10 @@ def feeder():
         CELLS_NED = 1.667*10**6
         ML = CELLS_NED/CELLS_ML
         steps = round(ML * 4097.5)
-
+        pumpAlgae.switchDir() 
+    
         # Recovery before feeding
-        pumpAlgae.cycle(steps)
+        pumpAlgae.cycle(steps) 
         pumpAlgae.switchDir()
 
         # Feed the mussels
