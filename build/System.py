@@ -148,7 +148,7 @@ def updatePID():
     global sysprops
     if sysprops['controlPID']['active']:
         now = utime.ticks_ms()
-        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['tempSensing']['lastMeasure']) >= 10*1000:
+        if not sysprops['controlPID']['lastUpdate'] or utime.ticks_diff(now, sysprops['controlPID']['lastUpdate']) >= 10*1000:
             P, I, D = sysprops['controlPID']['parameters']
             PID.setProportional(P)
             PID.setIntegral(I)
@@ -319,11 +319,11 @@ def publisher():
             #Publish to graphs
             client.publishTemp(sysprops['tempSensing'])
             client.publishCon(sysprops['odSensing'])
+            client.publishSpeed(sysprops['controlPID'])
             sysprops['lastPublish'] = now
             
             
         if not sysprops["lastPublishInfo"] or utime.ticks_diff(now,sysprops['lastPublishInfo']) >= 1000*20:
-            client.publishSpeed(sysprops['controlPID'])
             
             temp = sysprops['tempSensing']['temperature']
             if temp > 19:
