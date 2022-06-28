@@ -9,11 +9,10 @@ Description: Class implementing simple task scheduler for multi-threading on boa
 @__Date & Time --> Created on 09/06/2022
 @__Email --> = adrzvizdencojr@gmail.com
 @__Version --> = 1.1
-@__Status --> = Dev
+@__Status --> = Prod
 """
 
 import utime
-
 class TaskScheduler:
     # Initializing constructor
     def __init__(self, tick, divs):

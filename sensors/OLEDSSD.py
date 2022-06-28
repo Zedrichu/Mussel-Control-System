@@ -3,7 +3,7 @@
 """
 OLED Screen SSD1306.
 
-Description: Classes defining the OLED screen 
+Description: Classes defining the low-level OLED screen 
     SSD1306 with I2C and SPI interfaces.
 
 @__Author --> Created by Luca Pezzarossa & Adrian Zvizdenco
@@ -16,7 +16,7 @@ import time
 import framebuf
 
 
-# register definitions
+# Register Definitions
 SET_CONTRAST        = const(0x81)
 SET_ENTIRE_ON       = const(0xa4)
 SET_NORM_INV        = const(0xa6)
@@ -49,6 +49,9 @@ class SSD1306:
         self.init_display()
 
     def init_display(self):
+        """
+            Initialize the OLED screen.
+        """
         for cmd in (
             SET_DISP | 0x00, # off
             # address setting
@@ -76,16 +79,34 @@ class SSD1306:
         self.show()
 
     def poweroff(self):
+        """
+            Power-off the OLED screen.
+        """
         self.write_cmd(SET_DISP | 0x00)
 
     def contrast(self, contrast):
+        """
+            Set the contrast of the OLED screen.
+
+            Params:
+                contrast - value to be set
+        """
         self.write_cmd(SET_CONTRAST)
         self.write_cmd(contrast)
 
     def invert(self, invert):
+        """
+            Set inversion of the OLED screen.
+
+            Params:
+                invert - 0 or 1 to determine the desired inversion
+        """
         self.write_cmd(SET_NORM_INV | (invert & 1))
 
     def show(self):
+        """
+            Show messages on the OLED screen.
+        """
         x0 = 0
         x1 = self.width - 1
         if self.width == 64:
@@ -101,19 +122,34 @@ class SSD1306:
         self.write_framebuf()
 
     def fill(self, col):
+        """
+            Fill the OLED screen.
+        """
         self.framebuf.fill(col)
 
     def pixel(self, x, y, col):
+        """
+            Mark a pixel on the OLED screen.
+        """
         self.framebuf.pixel(x, y, col)
 
     def scroll(self, dx, dy):
+        """
+            Scroll across rows on the OLED screen.
+        """
         self.framebuf.scroll(dx, dy)
 
     def text(self, string, x, y, col=1):
+        """
+            Set text strins on specific box on the OLED screen.
+        """
         self.framebuf.text(string, x, y, col)
 
 
 class SSD1306_I2C(SSD1306):
+    """
+        I2C interface for the SSD1306 OLED Screen
+    """
     def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
         self.i2c = i2c
         self.addr = addr
@@ -143,6 +179,9 @@ class SSD1306_I2C(SSD1306):
 
 
 class SSD1306_SPI(SSD1306):
+    """
+        SPI interface for the SSD1306 OLED Screen
+    """
     def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):
         self.rate = 10 * 1024 * 1024
         dc.init(dc.OUT, value=0)

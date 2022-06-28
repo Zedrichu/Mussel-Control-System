@@ -30,13 +30,22 @@ ADC_Vmax = 3.15
 
 class TempSensor:
     def __init__(self, pinNoTemp = 32)-> None:
+        """
+            Temperature Sensor constructor with default pin no. 32.
+
+            Params:
+                pinNoTemp - number of the pin in which the sensor is connected
+        """
         self.adc = ADC(Pin(pinNoTemp))
         self.adc.atten(ADC.ATTN_11DB)
         self.adc.width(ADC.WIDTH_10BIT)
         
-    # Method to read the temperature from the thermistor
-    # Time 13000 Microseconds
+    # Time ticks 13000 Microseconds
     def read_temp(self):
+        """
+            Method to measure the temperature from the thermistor.
+            The returned result is averaged over 25 measurements.
+        """
         raw_read = []
         # Collect NUM_SAMPLES
         for i in range(1, NUM_SAMPLES+1):
