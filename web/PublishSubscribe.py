@@ -1,15 +1,14 @@
 #Python
 # -*- coding: utf-8 -*-
 """
-WebServer.
+Publish & Subscribe on Adafruit IO.
 
-Description: Webser
+Description: Script for publishing and subscribing on feeds from Adafruit IO server.
 
 @__Author --> Created by Jeppe Mikkelsen aka JepMik & Adrian Zvizdenco aka Zedrichu
 @__Date & Time --> Created on 16/06/2022
-@__Email --> = Jepmik@live.dk
 @__Version --> = 1.0
-@__Status --> = Dev
+@__Status --> = Prod
 """
 
 import network
@@ -18,10 +17,10 @@ from umqtt.robust import MQTTClient
 import os
 import gc
 import sys
-from TempSensor import TempSensor
+from sensors.TempSensor import TempSensor
 from Client import Client
 from Network import Network
-from MultiThread import TaskScheduler, Task
+from build.Concurrency import TaskScheduler, Task
 #from LightSensor import LightSensor
 
 # WiFi connection information
@@ -155,11 +154,14 @@ while True:
     
             # Subscribe.  Non-blocking check for a new message.  
             if sysprops['wifiConnection'] and boardNet.isConnected():
+                # If connection persists
                 client.check_msg()
             elif boardNet.isConnected() and not sysprops['wifiConnection']:
+                # If just connected after being offline
                 client.subscribe(system_feedname)
                 sysprops['wifiConnection'] = True
             elif sysprops['wifiConnection'] and not boardNet.isConnected():
+                # If disconnected
                 sysprops['wifiConnection'] = False
 
             time.sleep(SUBSCRIBE_CHECK_PERIOD_IN_SEC)

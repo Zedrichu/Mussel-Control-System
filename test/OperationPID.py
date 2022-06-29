@@ -1,16 +1,21 @@
-# Import the 2 defined pumps
-from BitBangPump import PumpBB
-# Import the defined cooler block
-from Cooling import Cooler
-# Import the reading of temp
-from TempSensor import TempSensor
-# Import the OLED screen
-from OLED import OLEDScreen
-# Import the PID controller
-from PIDController import PIDControl
-# Import PWM
-from PWMPump import PumpPWM
-# Import time
+#Python
+# -*- coding: utf-8 -*-
+"""
+Script testing & tuning the functionality of the PID controller.
+
+@__Author --> Created by Adrian Zvizdenco & Jeppe Mikkelsen
+@__Date & Time --> Created on 14/06/2022
+@__Version --> 1.0
+@__Status --> Test
+"""
+
+# Import all needed packages
+from controllers.BitBangPump import PumpBB
+from controllers.Cooling import Cooler
+from sensors.TempSensor import TempSensor
+from sensors.OLED import OLEDScreen
+from controllers.PIDController import PIDControl
+from controllers.PWMPump import PumpPWM
 import time
 
 tempsens = TempSensor()
@@ -33,7 +38,7 @@ cooler.peltHighPower()
 cooler.fanOn()
 
 # Function to adjust the speed of the pump 
-#according to the actuator
+#   according to the actuator value
 def adjustSpeed(ut):
     if ut <= 2:
         cooler.peltLowPower()

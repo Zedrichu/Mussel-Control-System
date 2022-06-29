@@ -1,16 +1,28 @@
+#Python
+# -*- coding: utf-8 -*-
+"""
+System Controller.
+
+Description: Script to control the entire system with remote controls and integrations.
+
+@__Author --> Created by Adrian Zvizdenco & Jeppe Mikkelsen
+@__Date & Time --> Created on 20/06/2022
+@__Version --> 1.0
+@__Status --> Prod
+"""
+
 import network, time, utime, math
 import os, gc, sys
-from TempSensor import TempSensor
-from Client import Client
-from Network import Network
-from MultiThread import Task, TaskScheduler
-from LightSensor import LightSensor
-from BitBangPump import PumpBB
-from PWMPump import PumpPWM
-from Cooling import Cooler
-from OLED import OLEDScreen
-from PIDController import PIDControl
-#from Logger import Logger
+from sensors.TempSensor import TempSensor
+from web.Client import Client
+from web.Network import Network
+from build.Concurrency import Task, TaskScheduler
+from sensors.LightSensor import LightSensor
+from controllers.BitBangPump import PumpBB
+from controllers.PWMPump import PumpPWM
+from controllers.Cooling import Cooler
+from sensors.OLED import OLEDScreen
+from controllers.PIDController import PIDControl
 
 # WiFi connection credentials
 WIFI_SSID = 'Pixel 5'
@@ -47,6 +59,7 @@ sysprops = {
     },
     "controlPID": {
         "active" : True,
+        "desiredTemperature" : 18,
         "lastUpdate" : None,
         "pumpSpeed": 0,
         "parameters" : (8.5, 2, 0.2)
@@ -98,7 +111,7 @@ oledScreen = OLEDScreen()
 lightSens = LightSensor()
 tempSens = TempSensor()
 temp = tempSens.read_temp()
-PID = PIDControl(temp)
+PID = PIDControl(temp, 18)
 
 # Set PID controller parameters by default
 P, I, D = sysprops['controlPID']['parameters']
@@ -270,6 +283,7 @@ def feeder():
         print("Mussels have been fed successfully!")
         sysprops['message'] = "Yummy. Mussels have been fed successfully with {} mL".format(round(sysprops['amountFeed'],2))
 
+# Add all required tasks to the offline scheduler
 offline.addTask(1, Task("Temperature Measurement", updateTemp))
 offline.addTask(2, Task("PID Update on Cooling", updatePID))
 offline.addTask(3, Task("Concentration Measurement", updateConc))

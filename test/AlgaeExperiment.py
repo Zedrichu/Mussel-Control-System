@@ -1,20 +1,23 @@
-#Algae overnight experiment
-# Import the 2 defined pumps
-from BitBangPump import PumpControl
-# Import the defined cooler block
-from Cooling import CoolerControl
-# Import the reading of temp
-from TempSensor import TempSensor
-# Import the PID controller
-from PIDController import PIDControl
-# Import PWM
-from PWMPump import PumpPWM
-# Import time
-import time
-# Import LightSensor
-from LightSensor import LightSensor
+#Python
+# -*- coding: utf-8 -*-
+"""
+Script performing the algae growth experiment overnight.
 
-print("hello")
+@__Author --> Created by Jeppe Mikkelsen
+@__Date & Time --> Created on 17/06/2022
+@__Version --> 1.0
+@__Status --> Test
+"""
+
+# Import all needed packages
+from controllers.BitBangPump import PumpControl
+from controllers.Cooling import CoolerControl
+from sensors.TempSensor import TempSensor
+from controllers.PIDController import PIDControl
+from controllers.PWMPump import PumpPWM
+import time
+from sensors.LightSensor import LightSensor
+
 #Init of classes
 tempsens = TempSensor()
 pumpAlgae = PumpPWM(15,33) #Changed for overnight experiment

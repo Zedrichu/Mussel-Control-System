@@ -18,39 +18,57 @@ import utime
 
 
 class PumpBB:
-    # Initialize the board pins used for defining direction & step
-    # For algae feeding default direction in 15 and step in 33
+    """
+        Bit-banging Pump Class
+    """
     def __init__(self, dir=15, step=33) -> None:
+        """
+            Bit-banging Pump constructor with default DIRECTION pin 15 and STEP pin 33.
+            Bit-banging method used for the pump feeding mussels with algae water.
+        """
         self.dir = Pin(dir, Pin.OUT)
         self.step = Pin(step, Pin.OUT)
 
-    # Perform one step (flip value of the step pin)
     # Time 200 ticks
     def stepOn(self):
+        """
+            Method to perform one step on the pump(flip value of STEP).
+        """
         self.step.value( 1-self.step.value() )
     
-    # Switch direction of the rotating stepper motor
     # Time 200 ticks
     def switchDir(self):
+        """
+            Method to switch direction of rotation on the stepper motor.
+        """
         self.dir.value( 1-self.dir.value() )
 
     # Cycle for given amount of steps
     # 1600 steps - 1 full rotation  
     # Time equation 200+200*steps  
     def cycle(self, steps):
+        """
+            Method to cycle the pump for the amount of steps given
+            1/8 of STEP used => 1600 steps === 1 full rotation (360°)
+
+            Params:
+                steps - amount of steps to be performed by the pump
+        """
         for i in range(steps):
             self.stepOn()
             utime.sleep_us(10)
             self.stepOn()
             utime.sleep_us(10)
-    
-    #Perform step depending on sleep interval
-    def stepSleep(self,sleep):
-        self.stepOn()
-        utime.sleep_us(sleep)
-        self.stepOn()
-        utime.sleep_us(sleep)
 
-# Direction in pin 15, step in pin 33
-#pumpAlgae = PumpBB(15,33)
-#pumpRight.cycle(100)
+    def stepSleep(self,sleep):
+        """
+            Method to perform one step forward based on a sleep interval.
+            Allows to adjust the speed of rotation.
+
+            Params:
+                sleep - amount of microseconds delayed between two steps
+        """
+        self.stepOn()
+        utime.sleep_us(sleep)
+        self.stepOn()
+        utime.sleep_us(sleep)

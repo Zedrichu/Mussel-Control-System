@@ -1,21 +1,25 @@
-# Import the LightSensor
-from LightSensor import LightSensor
-# Import the 2 defined pumps
-from BitBangPump import PumpControl
-# Import the defined cooler block
-from Cooling import CoolerControl
-# Import the reading of temp
-from TempSensor import TempSensor
-# Import the PID controller
-from PIDController import PIDControl
-# Import PWM
-from PWMPump import PumpPWM
-# Import time
+#Python
+# -*- coding: utf-8 -*-
+"""
+Script to test the functionality of all components connected to the board.
+
+@__Author --> Created by Adrian Zvizdenco & Jeppe Mikkelen
+@__Date & Time --> Created on 17/06/2022
+@__Version --> 1.0
+@__Status --> Test
+"""
+
+
+# Import all packages
+from sensors.LightSensor import LightSensor
+from controllers.BitBangPump import PumpControl
+from controllers.Cooling import CoolerControl
+from sensors.TempSensor import TempSensor
+from controllers.PIDController import PIDControl
+from controllers.PWMPump import PumpPWM
 import time
-# Import LightSensor
-from LightSensor import LightSensor
-# Import OLED
-from OlED import OLEDScreen
+from sensors.LightSensor import LightSensor
+from sensors.OLED import OLEDScreen
 
 oledScreen = OLEDScreen()
 tempsens = TempSensor()

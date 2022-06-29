@@ -1,7 +1,18 @@
-#Importing MultiThread/Task Scheduler
-from MultiThread import TaskScheduler, Task
+#Python
+# -*- coding: utf-8 -*-
+"""
+Script testing the implementation of the Task Scheduler on the board.
+
+@__Author --> Created by Adrian Zvizdenco aka Zedrichu
+@__Date & Time --> Created on 10/06/2022
+@__Version --> 1.0  
+@__Status --> Test
+"""
+
+# Importing MultiThread/Task Scheduler
+from build.Concurrency import TaskScheduler, Task
 # Import Tempsensor
-from TempSensor import tempsens
+from sensors.TempSensor import tempsens
 from machine import Pin, ADC
 import utime
 
