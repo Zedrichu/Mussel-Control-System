@@ -7,13 +7,13 @@ The aim of the project is to build a physical control system, growing algae and 
 ## **𝓟𝓱𝔂𝓼𝓲𝓬𝓪𝓵 𝓓𝓮𝓼𝓲𝓰𝓷**
 The entire system build is presented in the pictures below:
 
-<img src="./images/system-top.jpg" alt="Physical Design" width="250"/>
-<img src="./images/system-board.jpg" alt="Board Setup" width="250">
+<img src="./images/system-top.jpg" alt="Physical Design" width="700"/>
+<img src="./images/system-board.jpg" alt="Board Setup" width="700">
 
-<img src="./images/electronics.png" alt="Electronics Scheme" width="500"/>
+<img src="./images/electronics.png" alt="Electronics Scheme" width="700"/>
 
-<img src="./images/component-board.png" alt="Pumps & Cooler" width="250">
-<img src="./images/system-whole.jpg" alt="Pumps & Cooler" width="250">
+<img src="./images/component-board.png" alt="Pumps & Cooler" width="700">
+<img src="./images/system-whole.jpg" alt="Pumps & Cooler" width="700">
 
 ## **𝓟𝓘𝓓 𝓒𝓸𝓷𝓽𝓻𝓸𝓵𝓵𝓮𝓻**
 The PID controller has been developed in-house within the project, without any use of libraries, to allow full control over it's parameters. `(See file controllers/PIDController.py)`
