@@ -25,8 +25,8 @@ from sensors.OLED import OLEDScreen
 from controllers.PIDController import PIDControl
 
 # WiFi connection credentials
-WIFI_SSID = 'Pixel 5'
-WIFI_PASSWORD = 'letmeinnow'
+WIFI_SSID = 'SSID-Placeholder'
+WIFI_PASSWORD = 'PASSWORD-Placeholder'
 
 #System Properties
 sysprops = {
@@ -71,8 +71,8 @@ boardNet = Network(WIFI_SSID, WIFI_PASSWORD)
 
 # Adafruit IO broker credentials
 AIO_URL = b'io.adafruit.com' 
-AIO_USER = b'Zedrichu'
-AIO_KEY = b'aio_VimR20edRe8rYiVY1JW8avjiFldC'
+AIO_USER = b'USER-Placeholder'
+AIO_KEY = b'KEY-Placeholder'
 
 def tryConnectWIFI():
     global sysprops
