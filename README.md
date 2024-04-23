@@ -40,3 +40,6 @@ In order to improve the efficiency and reactiveness of the control system, a sim
 The concurrency arhitecture split on threads is presented in the sketch below:
 
 ![Multi-threading Arhitecture]( ./images/ThreadArhitect.png )  
+
+<img src="https://user-images.githubusercontent.com/65953954/120001846-7f05f180-bfd4-11eb-8c11-2379a547dc9f.jpg" alt="drawing" width="100"/>
+
